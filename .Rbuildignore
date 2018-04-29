@@ -5,7 +5,6 @@
 ^CONDUCT\.md$
 ^README\.Rmd$
 ^README-.*\.png$
-^inst$
 ^figs$
 ^tables$
 ^docs$
