@@ -1,0 +1,23 @@
+---
+title: "Change Title"
+author: "Benjamin R. Gordon"
+date: "`r format(Sys.time(), '%F')`"
+output:
+  html_document:
+    toc: TRUE
+    fig_caption: TRUE
+    highlight: "haddock"
+    df_print: "tibble"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Headers
+This size header is good
+
+### Session Info
+```{r session_info, include=TRUE}
+devtools::session_info()
+```
