@@ -1,7 +1,7 @@
-#' Function to preprocess raw data.
+#' Function to preprocess raw mzXML data.
 #'
-#' This function was used to tidy up mzdata-raw.csv created by mzdata-raw.R and
-#' create mzdata.rda in /data
+#' \code{mzdata()} was used to tidy up \code{./data-raw/mzdata-raw.csv} and
+#' output \code{./data/mzdata.rda}.
 #'
 #' Initially, the function takes the raw output from xcms and removes unwanted
 #' data (e.g. retention times, isotopes, peak counts etc.). Then it creates
@@ -14,34 +14,43 @@
 #' \item \strong{TRUE NON-DETECTS:}
 #'  Replace values missing in one class, but not others, with a random number
 #'  between zero and the minimum of the matrix (i.e. noise). To be considered a
-#'  true non-detect, a class should be missing at least 60% of its values. Ergo,
-#'  metabolomics::MissingValues(group.cutoff = 0.6)
+#'  true non-detect, a class should be missing at least 60 precent of its
+#'  values. Achieved with,
+#'  \code{metabolomics::MissingValues(group.cutoff = 0.6)}
 #'  \item \strong{POORLY RESOLVED MASS FEATURES:}
-#'  Remove mass features with more than 90% missing values. Ergo,
-#'  metabolomics::MissingValues(column.cutoff = 0.9)
+#'  Remove mass features with more than 90 percent missing values. Achieved
+#'  with, \code{metabolomics::MissingValues(column.cutoff = 0.9)}
 #'  \item \strong{FALSE NON DETECTS:}
-#'  Remaining missing values will be computed using missForest::missForest()
-#'  and so metabolomics::MissingValues(complete.matrix = FALSE)
+#'  Remaining missing values will be computed using
+#'  \code{missForest::missForest()}. Achieved with,
+#'  \code{metabolomics::MissingValues(complete.matrix = FALSE)}
 #' }
 #'
 #' @param parallel Logical indicating if missing values imputation should be run
-#' in parallel. If TRUE, the default number of cores is equal to half the
+#' in parallel. If \code{TRUE}, the default number of cores is equal to half the
 #' available number of cores
 #' @param seed An integer used for setting seeds of random number generation
-#' @param savecsv Logical indicating if output should be saved as a .csv file to
-#' the current working directory
+#' @param savecsv Logical indicating if output should be saved as a \code{.csv}
+#' file to the current working directory
 #' @param saverda Logical indicating if a .rda file should be saved to /data
 #' @param csvname The name of the output .csv file to be saved if TRUE
 #' @param ... Other arguments passed on to individual methods
 #'
 #' @return Returns a dataframe of class tbl_df
 #'
-#' @note Using parallel = TRUE is not reproducible. This function was not
-#' intended to be used for any other data without modification to the
-#' underlying code.
+#' @note Using \code{parallel = TRUE} is not reproducible. Future versions of
+#' this function may include support for reproducible RNG seeds when using
+#' parallel processing. \code{mzdata()} was not intended to be used outside of
+#' this package. Please use \code{gordon01:::mzdata()} to run this function
+#' after installing the package.
 #'
 #' @examples
-#' mzdata()
+#' gordon01:::mzdata(parallel = FALSE,
+#'                   seed = 100,
+#'                   savecsv = FALSE,
+#'                   saverda = TRUE,
+#'                   csvname = "mzdata",
+#'                   ...)
 #'
 mzdata <- function(parallel = FALSE,
                    seed = 100,
@@ -50,8 +59,14 @@ mzdata <- function(parallel = FALSE,
                    csvname = "mzdata",
                    ...
                    ) {
-  mzdata  <-  readr::read_csv("./data-raw/mzdata-raw.csv",
-                              na = "0")
+
+  library(tidyverse)
+  library(metabolomics)
+  library(doMC)
+  library(missForest)
+  library(devtools)
+
+  mzdata  <-  read_csv("./data-raw/mzdata-raw.csv", na = "0")
   # remove unwanted data -------------------------------------------------------
   mzdata <- mzdata[-1]
   mzdata <- mzdata[-2:-24]
@@ -64,7 +79,7 @@ mzdata <- function(parallel = FALSE,
   mzdata <- mzdata[-1]
   mz_names <- paste("mz", mz_names$mz, sep = "_")
   mz_names <- make.names(mz_names, unique = TRUE)
-  mzdata <- tibble::as_tibble(t(mzdata), rownames = "sample_ids")
+  mzdata <- as_tibble(t(mzdata), rownames = "sample_ids")
   colnames(mzdata)[2:ncol(mzdata)] <- mz_names
   sample_ids <- mzdata[1]
   # Create categorical variables -----------------------------------------------
@@ -124,13 +139,13 @@ mzdata <- function(parallel = FALSE,
                            sep = "."
                            )
   # Impute noise and remove unreliable mass features ---------------------------
-  mzdata <- tibble::as_tibble(cbind(class_day, mzdata[-1]))
-  mzdata_filt <- metabolomics::MissingValues(mzdata,
-                                             column.cutoff = 0.9,
-                                             group.cutoff = 0.6,
-                                             complete.matrix = FALSE,
-                                             seed = seed
-                                             )
+  mzdata <- as_tibble(cbind(class_day, mzdata[-1]))
+  mzdata_filt <- MissingValues(mzdata,
+                               column.cutoff = 0.9,
+                               group.cutoff = 0.6,
+                               complete.matrix = FALSE,
+                               seed = seed
+                               )
   mzdata <- data.frame(sample_ids,
                        class,
                        day,
@@ -141,25 +156,27 @@ mzdata <- function(parallel = FALSE,
   percent_na <- round(sum(is.na(mzdata))/prod(dim(mzdata[-1:-6]))*100, 2)
   # Impute remaining missing values --------------------------------------------
   if(parallel) {
-    doMC::registerDoMC()
+    registerDoMC()
     set.seed(seed)
-    mzdata.imp <- missForest::missForest(mzdata[-1], parallelize = "variables")
+    mzdata.imp <- missForest(mzdata[-1], parallelize = "variables")
   }
+
   else {
     set.seed(seed)
-    mzdata.imp <- missForest::missForest(mzdata[-1], parallelize = "no")
+    mzdata.imp <- missForest(mzdata[-1], parallelize = "no")
   }
-  mzdata <- tibble::as_tibble(cbind(sample_ids, mzdata.imp$ximp))
-  mzdata <- dplyr::arrange(mzdata, class, day)
+
+  mzdata <- as_tibble(cbind(sample_ids, mzdata.imp$ximp))
+  mzdata <- arrange(mzdata, class, day)
   # write data -----------------------------------------------------------------
   if(saverda) {
-    devtools::use_data(mzdata)
+    use_data(mzdata)
   }
+
   if(savecsv) {
-    readr::write_csv(mzdata,
-                     paste(c(csvname, ".csv"),
-                           collapse = ""))
+    write_csv(mzdata, paste(c("./data/", csvname, ".csv"), collapse = ""))
   }
+
   message("The data contained ", percent_na, "% NAs")########
   message("MissForest NRMSE: ", round(mzdata.imp$OOBerror, 4))
   mzdata
