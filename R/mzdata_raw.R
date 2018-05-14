@@ -24,7 +24,7 @@
 #' @examples
 #' gordon01:::mzdata_raw(saveoutput = FALSE, outputname = "example-mzdata-raw")
 #'
-#' @seealso \code{\link[xcms]{xcmsPreprocess}}
+#' @seealso \code{\link[xcms]{xcmsSet}}
 #'
 mzdata_raw <- function(saveoutput = FALSE,
                        outputname = "example-mzdata-raw",
