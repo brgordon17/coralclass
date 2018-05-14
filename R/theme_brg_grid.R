@@ -15,7 +15,7 @@
 #' @param base_size Base font size
 #' @param base_family Base font family
 #'
-#' @seealso \code{\link[ggplot]{theme_light()}}
+#' @seealso \code{\link[ggplot2]{theme_light()}}
 #'
 #' @examples
 #' p <- ggplot(mtcars) + geom_point(aes(x = wt, y = mpg))
