@@ -16,81 +16,91 @@
 #' @return Returns a dataframe of class \code{tbl_df}
 #'
 #' @note \code{mzdata_raw()} was not intended to be used outside of this
-#' package. Please use \code{gordon01:::mzdata_raw()} to run this function after
-#' installing the package. The function utilises as small subset of out
-#' \code{.mzXML} data only. The full \code{.mzXML} data set is available from
+#' package. To keep the size of this package small, only a small example subset
+#' of our LCMS \code{.mzXML} data is made available in
+#' \code{./data-raw/example_mzxml_data/}. The full data set is available from
 #' the package author.
 #'
 #' @examples
-#' gordon01:::mzdata_raw(saveoutput = FALSE, outputname = "example-mzdata-raw")
+#' mzdata_raw(saveoutput = FALSE, outputname = "example-mzdata-raw")
 #'
-#' @seealso \code{\link[xcms]{xcmsSet}}
+#' @seealso
+#' \code{\link[xcms]{xcmsSet}}
+#' \code{\link[CAMERA]{annotate}}
+#'
+#' @export
 #'
 mzdata_raw <- function(saveoutput = FALSE,
                        outputname = "example-mzdata-raw",
                        ...) {
 
-  library(tidyverse)
-  library(xcms)
-  library(CAMERA)
+  if (!requireNamespace("xcms", quietly = TRUE)) {
+    stop("Package \"xcms\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+  if (!requireNamespace("CAMERA", quietly = TRUE)) {
+    stop("Package \"CAMERA\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
 
   files <- list.files(path = "./data-raw/example_mzxml_data",
                       full.names = TRUE,
                       recursive = TRUE)
 
-  xset <- xcmsSet(files,
-                  method = "centWave",
-                  ppm = 30,
-                  snthr = 10,
-                  peakwidth = c(20,60),
-                  mzdiff = 0.01,
-                  integrate = 2,
-                  prefilter = c(3,1100)
-                  )
+  xset <- xcms::xcmsSet(files,
+                        method = "centWave",
+                        ppm = 30,
+                        snthr = 10,
+                        peakwidth = c(20,60),
+                        mzdiff = 0.01,
+                        integrate = 2,
+                        prefilter = c(3,1100)
+                        )
 
   # Group peaks
-  xsetgr1 <- group(xset,
-                   bw = 5,
-                   minfrac = 0.5,
-                   minsamp = 1,
-                   mzwid = 0.05,
-                   max = 100
-                   )
+  xsetgr1 <- xcms::group(xset,
+                         bw = 5,
+                         minfrac = 0.5,
+                         minsamp = 1,
+                         mzwid = 0.05,
+                         max = 100
+                         )
 
   # Correct RT
-  xsetcor <- retcor(xsetgr1,
-                    method = "obiwarp",
-                    plottype = "none",
-                    profStep = 0.5
-                    )
+  xsetcor <- xcms::retcor(xsetgr1,
+                          method = "obiwarp",
+                          plottype = "none",
+                          profStep = 0.5
+                          )
 
   # Regroup peaks
-  xsetgr2 <- group(xsetcor,
-                   bw = 5,
-                   minfrac = 0.5,
-                   minsamp = 1,
-                   mzwid= 0.05,
-                   max = 100
-                   )
+  xsetgr2 <- xcms::group(xsetcor,
+                         bw = 5,
+                         minfrac = 0.5,
+                         minsamp = 1,
+                         mzwid= 0.05,
+                         max = 100
+                         )
 
   # Fill missing peaks
-  xsetmiss <- fillPeaks(xsetgr2)
+  xsetmiss <- xcms::fillPeaks(xsetgr2)
 
   # Identify and annotate adducts
-  xsetadd <- annotate(xsetmiss,
-                      perfwhm = 0.7,
-                      cor_eic_th = 0.75,
-                      ppm = 10,
-                      polarity = "positive"
-                      )
+  xsetadd <- CAMERA::annotate(xsetmiss,
+                              perfwhm = 0.7,
+                              cor_eic_th = 0.75,
+                              ppm = 10,
+                              polarity = "positive"
+                              )
 
   # Get features
-  features <- as_tibble(getPeaklist(xsetadd))
+  features <- tibble::as_tibble(CAMERA::getPeaklist(xsetadd))
 
   # Save output
   if (saveoutput) {
-    write_csv(features, paste(c("./data-raw/",outputname, ".csv"),
-                              collapse = ""))
+    readr::write_csv(features, paste(c("./data-raw/",outputname, ".csv"),
+                                     collapse = ""))
   }
 
   features
