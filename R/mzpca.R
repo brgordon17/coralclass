@@ -34,6 +34,8 @@
 #' \code{\link{qual_colours()}}
 #' \code{\link{theme_brg_grid()}}
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @import ggplot2
 #'
 #' @export

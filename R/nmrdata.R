@@ -33,6 +33,8 @@
 #' @seealso
 #' \href{https://www.bruker.com/products/mr/nmr/nmr-software/nmr-software/amix/overview.html}{Bruker AMIX}
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @importFrom magrittr %>%
 #'
 #' @export

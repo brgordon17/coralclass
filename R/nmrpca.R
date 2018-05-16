@@ -34,6 +34,8 @@
 #' @examples
 #' x <- nmrpca()
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @import ggplot2
 #'
 #' @export

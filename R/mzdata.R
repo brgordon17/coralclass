@@ -52,6 +52,8 @@
 #'                   csvname = "mzdata",
 #'                   ...)
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @seealso
 #' \code{\link[metabolomics]{MissingValues()}}
 #' \code{\link[doMC]{registerDoMC()}}

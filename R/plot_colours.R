@@ -18,6 +18,8 @@
 #' @examples
 #' qual_colours()
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @seealso \href{http://serialmentor.com/dataviz/color-pitfalls.html#not-designing-for-color-vision-deficiency}{serialmentor.com}
 #' and \href{http://jfly.iam.u-tokyo.ac.jp/color/}{Okabe and Ito (2008)}
 #'
@@ -65,6 +67,8 @@ qual_colours <- function(colour = NULL) {
 #' @seealso
 #' \href{https://www.sarahandduck.com}{sarahandduck.com}
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @export
 #'
 sd_colours <- function(colour = NULL) {
@@ -104,6 +108,8 @@ sd_colours <- function(colour = NULL) {
 #'
 #' @seealso
 #' \href{http://colorbrewer2.org/#type=sequential&scheme=YlOrRd&n=5}{colorbrewer.org}
+#'
+#' @author Benjamin R. Gordon
 #'
 #' @export
 #'

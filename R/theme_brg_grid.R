@@ -21,6 +21,8 @@
 #'
 #' @seealso \code{\link[ggplot2]{theme_light()}}
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @export
 #'
 theme_brg_grid <- function(base_size = 12,

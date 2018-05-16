@@ -21,6 +21,8 @@
 #' @seealso
 #' \href{http://sape.inf.usi.ch/quick-reference/ggplot2/shape}{Sape research group)}
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @export
 #'
 

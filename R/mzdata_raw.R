@@ -24,6 +24,8 @@
 #' @examples
 #' mzdata_raw(saveoutput = FALSE, outputname = "example-mzdata-raw")
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @seealso
 #' \code{\link[xcms]{xcmsSet}}
 #' \code{\link[CAMERA]{annotate}}

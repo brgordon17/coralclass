@@ -11,6 +11,8 @@
 #' \item mzdata
 #'}
 #'
+#' @author Benjamin R. Gordon
+#'
 #' @docType package
 #' @name gordon01
 NULL
