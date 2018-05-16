@@ -1,6 +1,5 @@
 #' Custom base values for ggplot2
 #'
-#'
 #' Custom base values for setting ggplot2 scales such as shape, color,
 #' fill and xy axes. The code is mostly relevant to scatter plots.
 #'
