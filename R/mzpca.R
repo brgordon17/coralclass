@@ -20,15 +20,23 @@
 #'
 #' @return returns a list with class \code{"prcomp"}.
 #'
-#' @note \code{mzpca()} was not intended to be used outside of this package
-#' without modification to the underlying code.
+#' @note Although this function is exported, \code{mzpca()} was not intended to
+#' be used outside of this package. Run this function with default values to
+#' reproduce the results in this package.
+#'
+#' @examples
+#' x <- mzpca()
 #'
 #' @seealso
 #' \code{\link[stats]{prcomp()}}
 #' \code{\link[ggplot2]{ggplot()}}
+#' \code{\link{plot_shapes()}}
+#' \code{\link{qual_colours()}}
+#' \code{\link{theme_brg_grid()}}
 #'
-#' @examples
-#' x <- gordon01:::mzpca()
+#' @import ggplot2
+#'
+#' @export
 #'
 mzpca <- function(scale = FALSE,
                   center = TRUE,
@@ -36,8 +44,6 @@ mzpca <- function(scale = FALSE,
                   savepng = TRUE,
                   plotname = "mzpca_plot",
                   ...) {
-
-  library(ggplot2)
 
   load("./data/mzdata.rda")
   pca <- prcomp(mzdata[-1:-6], scale = scale, center = center)
@@ -47,16 +53,8 @@ mzpca <- function(scale = FALSE,
   scores <- data.frame(mzdata[, 2:6], pca$x)
   x_lab <- paste("PC1", " (", round(exp_var[1] * 100, 2), "%)", sep =  "")
   y_lab <- paste("PC2", " (", round(exp_var[2] * 100, 2), "%)", sep =  "")
-  custom_shapes <- c(21:25)
-  custom_colors <- c("orange" = "#E69F00",
-                     "sky blue" = "#56B4E9",
-                     "green" = "#009E73",
-                     "purple" = "#CC79A7",
-                     "grey" = "#999999",
-                     "yellow" = "#F0E442",
-                     "blue" = "#0072B2",
-                     "dark orange" = "#D55E00"
-                     )
+  custom_shapes <- gordon01::plot_shapes()
+  custom_colors <- gordon01::qual_colours()
   breaks = c(levels(scores$class))
   labels = c(levels(scores$class))
 
@@ -66,8 +64,7 @@ mzpca <- function(scale = FALSE,
                              y = PC2,
                              shape = class,
                              fill = class,
-                             color = class)
-                         ) +
+                             color = class)) +
     scale_shape_manual(values = custom_shapes,
                        breaks = breaks,
                        labels = labels,
@@ -93,9 +90,8 @@ mzpca <- function(scale = FALSE,
                stroke = 0.7,
                position = position_jitter(width = 0.01 * diff(range(scores$PC1)),
                                           height = 0.01 * diff(range(scores$PC2))
-                                          )
-               ) +
-    theme_brg_grid()
+                                          )) +
+   gordon01::theme_brg_grid()
 
   # save plot ------------------------------------------------------------------
   if(savepdf) {
