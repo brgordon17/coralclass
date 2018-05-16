@@ -1,4 +1,4 @@
-#' Function to preprocess raw 1H-NMR binned data.
+#' Preprocess raw 1H-NMR binned data.
 #'
 #' \code{nmrdata()} was used to tidy up \code{./data-raw/nmrdata-raw-0.02.csv}
 #' and output \code{./data/nmrdata.rda}.
@@ -20,8 +20,8 @@
 #' @return Returns a dataframe of class tbl_df
 #'
 #' @note \code{nmrdata()} was not intended to be used outside of this package.
-#' Please use \code{gordon01:::nmrdata()} to run this function after installing
-#' the package.
+#' Run this function with default values to reproduce the data used in this
+#' package
 #'
 #' @examples
 #' gordon01:::nmrdata(savecsv = FALSE,
@@ -30,6 +30,13 @@
 #'                    remove.vars = TRUE,
 #'                    vars = c("3.31"))
 #'
+#' @seealso
+#' \href{https://www.bruker.com/products/mr/nmr/nmr-software/nmr-software/amix/overview.html}{Bruker AMIX}
+#'
+#' @importFrom magrittr %>%
+#'
+#' @export
+#'
 nmrdata <- function(savecsv = FALSE,
                     saverda = TRUE,
                     csvname = "nmrdata",
@@ -37,10 +44,7 @@ nmrdata <- function(savecsv = FALSE,
                     vars = c("3.31"),
                     ...) {
 
-  library(devtools)
-  library(tidyverse)
-
-  nmrdata  <-  read_csv("./data-raw/nmrdata-raw-0.02.csv", na = "0")
+  nmrdata  <-  readr::read_csv("./data-raw/nmrdata-raw-0.02.csv", na = "0")
   colnames(nmrdata)[1] <- "sample_ids"
   sample_ids <- nmrdata[1]
   var_ids <- round(as.numeric(colnames(nmrdata[-1])),2)
@@ -90,20 +94,20 @@ nmrdata <- function(savecsv = FALSE,
                                   rep,
                                   nmrdata[2:ncol(nmrdata)],
                                   check.names = FALSE))
-  nmrdata <- arrange(nmrdata, class, day)
+  nmrdata <- dplyr::arrange(nmrdata, class, day)
 
   if(remove.vars) {
     nmrdata <- nmrdata %>%
-      select(-one_of(vars))
+      dplyr::select(-one_of(vars))
   }
 
   # write data -----------------------------------------------------------------
   if(saverda) {
-    use_data(nmrdata)
+    devtools::use_data(nmrdata)
   }
 
   if(savecsv) {
-    write_csv(nmrdata, paste(c("./data/", csvname, ".csv"), collapse = "")
+    readr::write_csv(nmrdata, paste(c("./data/", csvname, ".csv"), collapse = "")
     )
   }
 
