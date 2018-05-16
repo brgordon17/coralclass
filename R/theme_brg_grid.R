@@ -15,11 +15,13 @@
 #' @param base_size Base font size
 #' @param base_family Base font family
 #'
-#' @seealso \code{\link[ggplot2]{theme_light()}}
-#'
 #' @examples
 #' p <- ggplot(mtcars) + geom_point(aes(x = wt, y = mpg))
 #' p + theme_brg_grid()
+#'
+#' @seealso \code{\link[ggplot2]{theme_light()}}
+#'
+#' @export
 #'
 theme_brg_grid <- function(base_size = 12,
                            base_family = ""
@@ -29,12 +31,13 @@ theme_brg_grid <- function(base_size = 12,
     theme(
       panel.background = element_rect(fill = "transparent", colour = NA),
       panel.border = element_blank(),
-      panel.grid = element_line(colour = "grey87"),
+      panel.grid = element_line(colour = "grey90"),
       panel.grid.major = element_line(colour = "grey90", size = rel(0.75)),
       panel.grid.minor = element_blank(),
 
       axis.ticks = element_blank(),
-      axis.text = element_text(size = 10),
+      axis.text = element_text(size = 10,
+                               colour = "grey50"),
       axis.title.y = element_text(size = 12,
                                   angle = 90,
                                   vjust = 0,
@@ -55,6 +58,6 @@ theme_brg_grid <- function(base_size = 12,
                                                 0.8 * half_line)
                                 ),
 
-      plot.margin = margin(half_line, half_line, half_line, half_line),
+      plot.margin = margin(half_line, half_line, half_line, half_line)
     )
 }
