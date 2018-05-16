@@ -12,6 +12,16 @@ Description: This package contains all the analysis and results for the ocean
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: devtools,
-    dplyr
 RoxygenNote: 6.0.1
+Imports: devtools,
+    dplyr,
+    ggplot2,
+    magrittr,
+    readr,
+    tibble
+Suggests: caret,
+    CAMERA,
+    metabolomics,
+    missForest,
+    xcms
+    
