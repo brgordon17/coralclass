@@ -58,6 +58,6 @@ theme_brg_grid <- function(base_size = 12,
                                                 0.8 * half_line)
                                 ),
 
-      plot.margin = margin(half_line, half_line, half_line, half_line)
+      plot.margin = margin(2 * half_line, 2 * half_line, half_line, half_line)
     )
 }
