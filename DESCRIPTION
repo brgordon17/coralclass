@@ -13,14 +13,14 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Imports: devtools,
+Imports: caret,
+    devtools,
     dplyr,
     ggplot2,
     magrittr,
     readr,
     tibble
-Suggests: caret,
-    CAMERA,
+Suggests: CAMERA,
     metabolomics,
     missForest,
     xcms
