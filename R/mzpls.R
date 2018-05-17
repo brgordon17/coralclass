@@ -1,7 +1,7 @@
-#' Function to perform PLS-DA for LCMS data.
+#' PLS-DA analysis of LCMS data.
 #'
-#' \code{mzpls()} was used to perform the PLS-DA of the LCMS data
-#' (\code{./data/mzdata.rda})
+#' \code{mzpls()} was used to perform the partial least squares discriminant
+#' analysis of the LCMS data (\code{./data/mzdata.rda})
 #'
 #' \code{mzpls()} loads \code{mzdata} and performs a PLS-DA of the data using
 #' \code{mzdata$class} as outcomes. The process is outlined as follows:

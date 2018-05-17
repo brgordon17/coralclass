@@ -1,4 +1,4 @@
-#' Function to perform RF analysis for LCMS data.
+#' Random Forests Analysis of LCMS data.
 #'
 #' \code{mzpls()} was used to perform the random forests analysis of the LCMS
 #' data (\code{./data/mzdata.rda})
