@@ -3,9 +3,27 @@
 #' \code{mzpls()} was used to perform the PLS-DA of the LCMS data
 #' (\code{./data/mzdata.rda})
 #'
-#' \code{mzpls()} loads \code{mzdata} then partions the data into training and
-#' test sets (80:20 train/test split). It then sets up unique seeds for each
-#' iteration of the model.
+#' \code{mzpls()} loads \code{mzdata} and performs a PLS-DA of the data using
+#' \code{mzdata$class} as outcomes. The process is outlined as follows:
+#' \enumerate{
+#' \item The data is split into training and test sets using an 80:20 stratified
+#' split.
+#' \item A list of random seeds is produced for each iteration of the CV
+#' process. For the 10-fold, repeated (3 times) CV used here, we require 10 * 3
+#' seeds for each of the 50 principal components assesed.
+#' \item Define the CV parameters. 10 folds, 3 repeats, default summary. We also
+#' define the method for selecting the best tune. In this case, the best tune is
+#' the simplest model within one standard error of the empirically
+#' optimal model. This rule, as described by Breiman et al. (1984), may avoid
+#' overfitting the model. Note that k-fold CV as performed using
+#' \code{trainControl(method = "repeatedcv")} stratifies sampling according to
+#' class.
+#' \item The data is centred by subtracting the mean of the predictor's data
+#' from the predictor values
+#' \item The data is scaled by dividing the predictor's by the standard
+#' deviation.
+#' \item The model is run.
+#' }
 #'
 #' @param parallel Logical indicating if parallel processing should be used.
 #' @param save.model Logical indicating if the model should be saved.
@@ -13,24 +31,26 @@
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
-#' @param plot.name Name of plot if \code{save.plot = TRUE}
-#' @param model.name Name of model if \code{save.model = TRUE}
-#' @param seed The seed used for random number generation
+#' @param plot.name Name of plot if \code{save.plot = TRUE}.
+#' @param model.name Name of model if \code{save.model = TRUE}.
+#' @param seed An integer for setting the RNG state.
+#' @param pred.results Logical indicating if the results of predicting the test
+#' data should be printed to the console.
 #' @param ... Other arguments passed on to individual methods.
 #'
 #' @return returns a list with class \code{"prcomp"}.
 #'
-#' @note Although this function is exported, \code{mzpca()} was not intended to
+#' @note Although this function is exported, \code{mzpls()} was not intended to
 #' be used outside of this package. Run this function with default values to
 #' reproduce the results in this package.
 #'
 #' @seealso
 #' \code{\link[caret]{train()}}
 #' \code{\link[ggplot2]{ggplot()}}
-#' \href{http://topepo.github.io/caret/index.html}{The caret Package by Max Kuhn (2017)}
+#' \href{http://topepo.github.io/caret/index.html}{The caret Package} by Max Kuhn (2017)
 #'
 #' @examples
-#' x <- gordon01:::mzpls()
+#' x <- mzpls()
 #'
 #' @author Benjamin R. Gordon
 #'
@@ -45,6 +65,7 @@ mzpls <- function(parallel = TRUE,
                   plot.name = "mzpls_cv_plot",
                   model.name = "mzpls_model",
                   seed = 1978,
+                  pred.results = TRUE,
                   ...) {
 
   if (!requireNamespace("caret", quietly = TRUE)) {
@@ -57,7 +78,7 @@ mzpls <- function(parallel = TRUE,
   load("./data/mzdata.rda")
   plsdata <- data.frame(mzdata[-which(mzdata$class == "PBQC"), ])
   plsdata <- droplevels(plsdata)
-  ## Create test and training sets.
+
   set.seed(seed)
   index <- caret::createDataPartition(plsdata$class_day,
                                       p = .8,
@@ -67,9 +88,6 @@ mzpls <- function(parallel = TRUE,
   train <- plsdata[index, ]
   test  <- plsdata[-index, ]
 
-  ## set seeds for each iteration of the model. I need 10 * 3 seeds for CV plus
-  ## one for the final model (31). Since tunelength = 50 (50 prcomps), I need 50
-  ## seeds for each of the 30 iterations of CV.
   set.seed(seed)
   seeds <- vector(mode = "list", length = 31)
   for(i in 1:30) seeds[[i]] <- sample.int(1000, 50)
@@ -112,16 +130,17 @@ mzpls <- function(parallel = TRUE,
                          )
   }
 
+  preds <- caret::confusionMatrix(predict(mzpls, newdata = test), test$class)
+
   custom_shapes <- gordon01::plot_shapes("triangle")
   custom_colours <- gordon01::seq_colours("red")
-
   train_plot <- ggplot(mzpls$results, aes(x = ncomp,
                                             y = Accuracy)
                          ) +
     geom_line(colour = custom_colours,
               size = 1) +
-    geom_point(aes(x = ncomp[mzpls$bestTune$ncomp],
-                    y = Accuracy[mzpls$bestTune$ncomp]),
+    geom_point(aes(x = ncomp[ncomp == mzpls$bestTune$ncomp],
+                    y = Accuracy[ncomp == mzpls$bestTune$ncomp]),
                 colour = custom_colours,
                 size = 3) +
     scale_x_continuous(limits = c(1, 50),
@@ -141,7 +160,8 @@ mzpls <- function(parallel = TRUE,
                                      size = 0.6)) +
     annotate("text",
               x = mzpls$bestTune$ncomp,
-              y = 0.91,
+              y = mzpls$results$Accuracy[mzpls$results$ncomp ==
+                                          mzpls$bestTune$ncomp] + 0.1,
               label = paste("Best Tune (ncomp = ", mzpls$bestTune$ncomp, ")",
                             sep = ""))
 
@@ -160,6 +180,10 @@ mzpls <- function(parallel = TRUE,
 
   if(save.model) {
     saveRDS(mzpls, paste(c("./data/", model.name, ".rds"), collapse = ""))
+  }
+
+  if(pred.results) {
+    print(preds)
   }
 
   mzpls
