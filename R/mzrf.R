@@ -1,0 +1,204 @@
+#' Function to perform RF analysis for LCMS data.
+#'
+#' \code{mzpls()} was used to perform the random forests analysis of the LCMS
+#' data (\code{./data/mzdata.rda})
+#'
+#' \code{mzrf()} loads \code{mzdata} and performs a RF analysis of the data
+#' using \code{mzdata$class} as outcomes. The process is outlined as follows:
+#' \enumerate{
+#' \item The data is split into training and test sets using an 80:20 stratified
+#' split.
+#' \item A list of random seeds is produced for each iteration of the CV
+#' process. For the 10-fold, repeated (3 times) CV used here, we require 10 * 3
+#' seeds for each mtry value assesed (tune grid length).
+#' \item Define a tuning grid of mtry values. In this case we assess mtry values
+#' \code{c(25, 75, 100, seq(from = 100, to = 500, by = 50))} giving a tunegrid
+#' length of 12.
+#' \item Define the CV parameters. 10 folds, 3 repeats, default summary. We also
+#' define the method for selecting the best tune. In this case, the best tune is
+#' the simplest model within one standard error of the empirically
+#' optimal model. This rule, as described by Breiman et al. (1984), may avoid
+#' overfitting the model. Note that k-fold CV as performed using
+#' \code{trainControl(method = "repeatedcv")} stratifies sampling according to
+#' class.
+#' \item The data is centred by subtracting the mean of the predictor's data
+#' from the predictor values
+#' \item The data is scaled by dividing the predictor's by the standard
+#' deviation.
+#' \item The model is run.
+#' }
+#'
+#' @param parallel Logical indicating if parallel processing should be used.
+#' @param save.model Logical indicating if the model should be saved.
+#' @param view.plot Logical indicating if a plot of accuracy vs prcomp should
+#' be printed to the plot viewer.
+#' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
+#' in the \code{./figs} directory.
+#' @param plot.name Name of plot if \code{save.plot = TRUE}.
+#' @param model.name Name of model if \code{save.model = TRUE}.
+#' @param seed An integer for setting the RNG state.
+#' @param pred.results Logical indicating if the results of predicting the test
+#' data should be printed to the console.
+#' @param ... Other arguments passed on to individual methods.
+#'
+#' @return returns a list with class \code{"prcomp"}.
+#'
+#' @note Although this function is exported, \code{mzpls()} was not intended to
+#' be used outside of this package. Run this function with default values to
+#' reproduce the results in this package.
+#'
+#' @seealso
+#' \code{\link[caret]{train()}}
+#' \code{\link[ggplot2]{ggplot()}}
+#' \href{http://topepo.github.io/caret/index.html}{The caret Package} by Max Kuhn (2017)
+#'
+#' @examples
+#' x <- mzpls()
+#'
+#' @author Benjamin R. Gordon
+#'
+#' @import caret
+#'
+#' @export
+#'
+mzrf <- function(parallel = TRUE,
+                 save.model = TRUE,
+                 view.plot = TRUE,
+                 save.plot = FALSE,
+                 plot.name = "mzrf_cv_plot",
+                 model.name = "mzrf_model",
+                 seed = 1978,
+                 pred.results = TRUE,
+                 ...) {
+
+  if (!requireNamespace("caret", quietly = TRUE)) {
+    stop("Package \"caret\" needed for this function to work. Please install
+         it.",
+         call. = FALSE)
+  }
+
+  # Modelling setup -----------------------------------------------------------
+  load("./data/mzdata.rda")
+  rfdata <- data.frame(mzdata[-which(mzdata$class == "PBQC"), ])
+  rfdata <- droplevels(rfdata)
+
+  set.seed(seed)
+  index <- caret::createDataPartition(rfdata$class_day,
+                                      p = .8,
+                                      list = FALSE,
+                                      times = 1
+                                      )
+  train <- rfdata[index, ]
+  test  <- rfdata[-index, ]
+
+  # setup tuning grid for mtry (12 steps)
+  tunegrid <- expand.grid(.mtry = c(25, 50, 75,
+                                    seq(from = 100, to = 500, by = 50)
+                                    ))
+
+  # set seeds for each iteration of the stepwise model.
+  # model will run 15 steps from 25 - 1400
+  # I need 10 * 3 seeds for cv plus one for the final model (31).
+  # tunegrid length is auto set for each of the 30 cv's.
+  set.seed(seed)
+  seeds <- vector(mode = "list", length = 31)
+  for(i in 1:30) seeds[[i]] <- sample.int(1000, length(tunegrid[,1]))
+  seeds[[31]] <- sample.int(1000, 1)
+
+  # Setup ctrl
+  ctrl <- caret::trainControl(method = "repeatedcv",
+                              number = 10,
+                              repeats = 3,
+                              summaryFunction = defaultSummary,
+                              seeds = seeds,
+                              savePredictions = "all",
+                              selectionFunction = "oneSE"
+                              )
+
+  ## Create model --------------------------------------------------------------
+  if(parallel) {
+    doMC::registerDoMC()
+    set.seed(seed)
+    mzrf = caret::train(x = train[, -1:-6],
+                         y = train$class,
+                         method = "rf",
+                         trControl = ctrl,
+                         preProc = c("center", "scale"),
+                         allowParallel = TRUE,
+                         importance = TRUE,
+                         tuneGrid = tunegrid
+                         )
+  }
+
+  else {
+    set.seed(seed)
+    mzrf = caret::train(x = train[, -1:-6],
+                         y = train$class,
+                         method = "rf",
+                         trControl = ctrl,
+                         preProc = c("center", "scale"),
+                         allowParallel = FALSE,
+                         importance = TRUE,
+                         tuneGrid = tunegrid
+                         )
+  }
+
+  preds <- caret::confusionMatrix(predict(mzrf, newdata = test), test$class)
+
+  custom_shapes <- gordon01::plot_shapes("triangle")
+  custom_colours <- gordon01::seq_colours("red")
+  train_plot <- ggplot(mzrf$results, aes(x = mtry,
+                                         y = Accuracy)
+                       ) +
+    geom_line(colour = custom_colours,
+              size = 1) +
+    geom_point(aes(x = mtry[mtry == mzrf$bestTune$mtry],
+                   y = Accuracy[mtry == mzrf$bestTune$mtry]),
+               colour = custom_colours,
+               size = 3) +
+    scale_x_continuous(limits = c(25, 550),
+                       expand = c(0, 0),
+                       name = "mtry") +
+    scale_y_continuous(limits = c(0, 1),
+                       expand = c(0, 0)) +
+    gordon01:::theme_brg_grid() +
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "grey90",
+                                            size = 0.6),
+          axis.ticks.x = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.ticks.y = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.line.x = element_line(colour = "grey90",
+                                     size = 0.6)) +
+    annotate("text",
+             x = mzrf$bestTune$mtry,
+             y = mzrf$results$Accuracy[mzrf$results$mtry ==
+                                         mzrf$bestTune$mtry] + 0.1,
+             label = paste("Best Tune (mtry = ", mzrf$bestTune$mtry, ")",
+                           sep = ""))
+
+  if(view.plot) {
+    print(train_plot)
+  }
+
+  if(save.plot) {
+    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+        width = 10,
+        height = 8,
+        useDingbats = FALSE)
+    print(train_plot)
+    dev.off()
+  }
+
+  if(save.model) {
+    saveRDS(mzrf, paste(c("./data/", model.name, ".rds"), collapse = ""))
+  }
+
+  if(pred.results) {
+    print(preds)
+  }
+
+  mzrf
+
+}
