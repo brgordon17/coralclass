@@ -38,7 +38,7 @@
 #' data should be printed to the console.
 #' @param ... Other arguments passed on to individual methods.
 #'
-#' @return returns a list with class \code{"prcomp"}.
+#' @return returns a list with class \code{train}.
 #'
 #' @note Although this function is exported, \code{mzpls()} was not intended to
 #' be used outside of this package. Run this function with default values to

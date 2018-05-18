@@ -1,6 +1,6 @@
 #' Random Forests Analysis of LCMS data.
 #'
-#' \code{mzpls()} was used to perform the random forests analysis of the LCMS
+#' \code{mzrf()} was used to perform the random forests analysis of the LCMS
 #' data (\code{./data/mzdata.rda})
 #'
 #' \code{mzrf()} loads \code{mzdata} and performs a RF analysis of the data
@@ -41,7 +41,7 @@
 #' data should be printed to the console.
 #' @param ... Other arguments passed on to individual methods.
 #'
-#' @return returns a list with class \code{"prcomp"}.
+#' @return returns a list with class \code{train}.
 #'
 #' @note Although this function is exported, \code{mzpls()} was not intended to
 #' be used outside of this package. Run this function with default values to
