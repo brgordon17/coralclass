@@ -2,7 +2,7 @@
 #'
 #' A custom \code{ggplot2} theme that includes major grid lines on both axes.
 #'
-#' This theme is based on \code{\link[ggplot2]{theme_light()}} with the
+#' This theme is based on \code{\link[ggplot2]{theme_light}} with the
 #' following major differences:
 #' \itemize{
 #' \item axis text to \code{size = 11}
@@ -15,11 +15,7 @@
 #' @param base_size Base font size
 #' @param base_family Base font family
 #'
-#' @examples
-#' p <- ggplot(mtcars) + geom_point(aes(x = wt, y = mpg))
-#' p + theme_brg_grid()
-#'
-#' @seealso \code{\link[ggplot2]{theme_light()}}
+#' @seealso \code{\link[ggplot2]{theme_light}}
 #'
 #' @author Benjamin R. Gordon
 #'
