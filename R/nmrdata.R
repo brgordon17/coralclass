@@ -23,13 +23,6 @@
 #' Run this function with default values to reproduce the data used in this
 #' package
 #'
-#' @examples
-#' gordon01:::nmrdata(savecsv = FALSE,
-#'                    saverda = TRUE,
-#'                    csvname = "nmrdata",
-#'                    remove.vars = TRUE,
-#'                    vars = c("3.31"))
-#'
 #' @seealso
 #' \href{https://www.bruker.com/products/mr/nmr/nmr-software/nmr-software/amix/overview.html}{Bruker AMIX}
 #'
@@ -89,18 +82,18 @@ nmrdata <- function(savecsv = FALSE,
   rep <- c(rep(c(1, 2, 3), 31))
   rep <- factor(rep, levels = (c(1:3)))
 
-  nmrdata <- as_tibble(data.frame(sample_ids,
-                                  class,
-                                  day,
-                                  tank,
-                                  rep,
-                                  nmrdata[2:ncol(nmrdata)],
-                                  check.names = FALSE))
+  nmrdata <- tibble::as_tibble(data.frame(sample_ids,
+                                          class,
+                                          day,
+                                          tank,
+                                          rep,
+                                          nmrdata[2:ncol(nmrdata)],
+                                          check.names = FALSE))
   nmrdata <- dplyr::arrange(nmrdata, class, day)
 
   if(remove.vars) {
     nmrdata <- nmrdata %>%
-      dplyr::select(-one_of(vars))
+      dplyr::select(-dplyr::one_of(vars))
   }
 
   # write data -----------------------------------------------------------------
