@@ -43,7 +43,7 @@
 #'
 #' @return returns a list with class \code{train}.
 #'
-#' @note Although this function is exported, \code{mzpls()} was not intended to
+#' @note Although this function is exported, \code{mzrf()} was not intended to
 #' be used outside of this package. Run this function with default values to
 #' reproduce the results in this package.
 #'
