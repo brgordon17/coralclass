@@ -15,9 +15,6 @@
 #' @note Although this function is exported, \code{qual_colours()} was not
 #' intended to be used outside of this package.
 #'
-#' @examples
-#' qual_colours()
-#'
 #' @author Benjamin R. Gordon
 #'
 #' @seealso \href{http://serialmentor.com/dataviz/color-pitfalls.html#not-designing-for-color-vision-deficiency}{serialmentor.com}

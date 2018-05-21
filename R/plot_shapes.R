@@ -15,9 +15,6 @@
 #' @note Although this function is exported, \code{plot_shapes()} was not
 #' intended to be used outside of this package.
 #'
-#' @examples
-#' plot_shapes()
-#'
 #' @seealso
 #' \href{http://sape.inf.usi.ch/quick-reference/ggplot2/shape}{Sape research group)}
 #'
