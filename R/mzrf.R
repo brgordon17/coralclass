@@ -48,12 +48,9 @@
 #' reproduce the results in this package.
 #'
 #' @seealso
-#' \code{\link[caret]{train()}}
-#' \code{\link[ggplot2]{ggplot()}}
+#' \code{\link[caret]{train}}
+#' \code{\link[ggplot2]{ggplot}}
 #' \href{http://topepo.github.io/caret/index.html}{The caret Package} by Max Kuhn (2017)
-#'
-#' @examples
-#' x <- mzpls()
 #'
 #' @author Benjamin R. Gordon
 #'
@@ -78,7 +75,6 @@ mzrf <- function(parallel = TRUE,
   }
 
   # Modelling setup -----------------------------------------------------------
-  load("./data/mzdata.rda")
   rfdata <- data.frame(mzdata[-which(mzdata$class == "PBQC"), ])
   rfdata <- droplevels(rfdata)
 
@@ -145,8 +141,8 @@ mzrf <- function(parallel = TRUE,
 
   preds <- caret::confusionMatrix(predict(mzrf, newdata = test), test$class)
 
-  custom_shapes <- gordon01::plot_shapes("triangle")
-  custom_colours <- gordon01::seq_colours("red")
+  custom_shapes <- plot_shapes("triangle")
+  custom_colours <- seq_colours("red")
   train_plot <- ggplot(mzrf$results, aes(x = mtry,
                                          y = Accuracy)
                        ) +
@@ -161,7 +157,7 @@ mzrf <- function(parallel = TRUE,
                        name = "mtry") +
     scale_y_continuous(limits = c(0, 1),
                        expand = c(0, 0)) +
-    gordon01:::theme_brg_grid() +
+    theme_brg_grid() +
     theme(panel.grid.major.x = element_blank(),
           panel.grid.major.y = element_line(colour = "grey90",
                                             size = 0.6),
@@ -192,7 +188,7 @@ mzrf <- function(parallel = TRUE,
   }
 
   if(save.model) {
-    saveRDS(mzrf, paste(c("./data/", model.name, ".rds"), collapse = ""))
+    saveRDS(mzrf, paste(c("./inst/extdata/", model.name, ".rds"), collapse = ""))
   }
 
   if(pred.results) {
