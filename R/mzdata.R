@@ -34,7 +34,6 @@
 #' file to the current working directory
 #' @param saverda Logical indicating if a .rda file should be saved to /data
 #' @param csvname The name of the output .csv file to be saved if TRUE
-#' @param ... Other arguments passed on to individual methods
 #'
 #' @return Returns a dataframe of class tbl_df
 #'
@@ -44,20 +43,14 @@
 #' not intended to be used outside of this package. Run this function with
 #' default values to reproduce the data used in this package.
 #'
-#' @examples
-#' gordon01:::mzdata(parallel = FALSE,
-#'                   seed = 100,
-#'                   savecsv = FALSE,
-#'                   saverda = TRUE,
-#'                   csvname = "mzdata",
-#'                   ...)
-#'
 #' @author Benjamin R. Gordon
 #'
 #' @seealso
-#' \code{\link[metabolomics]{MissingValues()}}
-#' \code{\link[doMC]{registerDoMC()}}
-#' \code{\link[missForest]{missForest()}}
+#' \code{\link[metabolomics]{MissingValues}}
+#' \code{\link[doMC]{registerDoMC}}
+#' \code{\link[missForest]{missForest}}
+#'
+#' @import utils
 #'
 #' @export
 #'
@@ -65,8 +58,7 @@ mzdata <- function(parallel = FALSE,
                    seed = 100,
                    savecsv = FALSE,
                    saverda = TRUE,
-                   csvname = "mzdata",
-                   ...
+                   csvname = "mzdata"
                    ) {
 
   if (!requireNamespace("metabolomics", quietly = TRUE)) {
@@ -81,23 +73,23 @@ mzdata <- function(parallel = FALSE,
          call. = FALSE)
   }
 
-  mzdata  <-  readr::read_csv("./data-raw/mzdata-raw.csv", na = "0")
+  data  <-  readr::read_csv("./data-raw/mzdata-raw.csv", na = "0")
 
   # remove unwanted data -------------------------------------------------------
-  mzdata <- mzdata[-1]
-  mzdata <- mzdata[-2:-24]
-  mzdata <- mzdata[-grep("[M+1]", mzdata$isotopes, fixed = TRUE),]
-  mzdata <- mzdata[-grep("[M+2]", mzdata$isotopes, fixed = TRUE),]
-  mzdata <- mzdata[-grep("[M+3]", mzdata$isotopes, fixed = TRUE),]
-  mzdata <- mzdata[-grep("[M+4]", mzdata$isotopes, fixed = TRUE),]
-  mzdata <- mzdata[-103:-105]
-  mz_names <- round(mzdata[1], 4)
-  mzdata <- mzdata[-1]
+  data <- data[-1]
+  data <- data[-2:-24]
+  data <- data[-grep("[M+1]", data$isotopes, fixed = TRUE),]
+  data <- data[-grep("[M+2]", data$isotopes, fixed = TRUE),]
+  data <- data[-grep("[M+3]", data$isotopes, fixed = TRUE),]
+  data <- data[-grep("[M+4]", data$isotopes, fixed = TRUE),]
+  data <- data[-103:-105]
+  mz_names <- round(data[1], 4)
+  data <- data[-1]
   mz_names <- paste("mz", mz_names$mz, sep = "_")
   mz_names <- make.names(mz_names, unique = TRUE)
-  mzdata <- tibble::as_tibble(t(mzdata), rownames = "sample_ids")
-  colnames(mzdata)[2:ncol(mzdata)] <- mz_names
-  sample_ids <- mzdata[1]
+  data <- tibble::as_tibble(t(data), rownames = "sample_ids")
+  colnames(data)[2:ncol(data)] <- mz_names
+  sample_ids <- data[1]
 
   # Create categorical variables -----------------------------------------------
   class <- c(rep("eCO2", 6),
@@ -157,47 +149,47 @@ mzdata <- function(parallel = FALSE,
                            )
 
   # Impute noise and remove unreliable mass features ---------------------------
-  mzdata <- tibble::as_tibble(cbind(class_day, mzdata[-1]))
-  mzdata_filt <- metabolomics::MissingValues(mzdata,
+  data <- tibble::as_tibble(cbind(class_day, data[-1]))
+  data_filt <- metabolomics::MissingValues(data,
                                              column.cutoff = 0.9,
                                              group.cutoff = 0.6,
                                              complete.matrix = FALSE,
                                              seed = seed
                                              )
-  mzdata <- data.frame(sample_ids,
+  data <- data.frame(sample_ids,
                        class,
                        day,
                        tank,
                        rep,
-                       mzdata_filt$output
+                       data_filt$output
                        )
-  percent_na <- round(sum(is.na(mzdata))/prod(dim(mzdata[-1:-6]))*100, 2)
+  percent_na <- round(sum(is.na(data))/prod(dim(data[-1:-6]))*100, 2)
 
   # Impute remaining missing values --------------------------------------------
   if(parallel) {
     doMC::registerDoMC()
     set.seed(seed)
-    mzdata.imp <- missForest::missForest(mzdata[-1], parallelize = "variables")
+    data.imp <- missForest::missForest(data[-1], parallelize = "variables")
   }
 
   else {
     set.seed(seed)
-    mzdata.imp <- missForest::missForest(mzdata[-1], parallelize = "no")
+    data.imp <- missForest::missForest(data[-1], parallelize = "no")
   }
 
-  mzdata <- tibble::as_tibble(cbind(sample_ids, mzdata.imp$ximp))
-  mzdata <- dplyr::arrange(mzdata, class, day)
+  data <- tibble::as_tibble(cbind(sample_ids, data.imp$ximp))
+  data <- dplyr::arrange(data, class, day)
 
   # write data -----------------------------------------------------------------
   if(saverda) {
-    devtools::use_data(mzdata)
+    devtools::use_data(data)
   }
 
   if(savecsv) {
-    readr::write_csv(mzdata, paste(c("./data/", csvname, ".csv"), collapse = ""))
+    readr::write_csv(data, paste(c("./data/", csvname, ".csv"), collapse = ""))
   }
 
   message("The data contained ", percent_na, "% NAs")########
-  message("MissForest NRMSE: ", round(mzdata.imp$OOBerror, 4))
-  mzdata
+  message("MissForest NRMSE: ", round(data.imp$OOBerror, 4))
+  data
 }
