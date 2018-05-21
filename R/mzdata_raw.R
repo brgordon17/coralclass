@@ -21,9 +21,6 @@
 #' \code{./data-raw/example_mzxml_data/}. The full data set is available from
 #' the package author.
 #'
-#' @examples
-#' mzdata_raw(saveoutput = FALSE, outputname = "example-mzdata-raw")
-#'
 #' @author Benjamin R. Gordon
 #'
 #' @seealso
