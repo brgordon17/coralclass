@@ -24,19 +24,18 @@
 #' be used outside of this package. Run this function with default values to
 #' reproduce the results in this package.
 #'
-#' @examples
-#' x <- mzpca()
-#'
 #' @seealso
-#' \code{\link[stats]{prcomp()}}
-#' \code{\link[ggplot2]{ggplot()}}
-#' \code{\link{plot_shapes()}}
-#' \code{\link{qual_colours()}}
-#' \code{\link{theme_brg_grid()}}
+#' \code{\link[stats]{prcomp}}
+#' \code{\link[ggplot2]{ggplot}}
+#' \code{\link{plot_shapes}}
+#' \code{\link{qual_colours}}
+#' \code{\link{theme_brg_grid}}
 #'
 #' @author Benjamin R. Gordon
 #'
 #' @import ggplot2
+#' grDevices
+#' stats
 #'
 #' @export
 #'
@@ -47,7 +46,6 @@ mzpca <- function(scale = FALSE,
                   plotname = "mzpca_plot",
                   ...) {
 
-  load("./data/mzdata.rda")
   pca <- prcomp(mzdata[-1:-6], scale = scale, center = center)
 
   # Define variables for PCA plot ----------------------------------------------
@@ -55,8 +53,8 @@ mzpca <- function(scale = FALSE,
   scores <- data.frame(mzdata[, 2:6], pca$x)
   x_lab <- paste("PC1", " (", round(exp_var[1] * 100, 2), "%)", sep =  "")
   y_lab <- paste("PC2", " (", round(exp_var[2] * 100, 2), "%)", sep =  "")
-  custom_shapes <- gordon01::plot_shapes()
-  custom_colors <- gordon01::qual_colours()
+  custom_shapes <- plot_shapes()
+  custom_colors <- qual_colours()
   breaks = c(levels(scores$class))
   labels = c(levels(scores$class))
 
@@ -93,7 +91,7 @@ mzpca <- function(scale = FALSE,
                position = position_jitter(width = 0.01 * diff(range(scores$PC1)),
                                           height = 0.01 * diff(range(scores$PC2))
                                           )) +
-   gordon01::theme_brg_grid()
+   theme_brg_grid()
 
   # save plot ------------------------------------------------------------------
   if(savepdf) {
