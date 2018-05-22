@@ -1,7 +1,7 @@
-#' Preprocess raw 1H-NMR binned data.
+#' create nmrdata.
 #'
-#' \code{nmrdata()} was used to tidy up \code{./data-raw/nmrdata-raw-0.02.csv}
-#' and output \code{./data/nmrdata.rda}.
+#' \code{nmrdata()} is the pre-processed 1H-NMR data used for modelling in
+#' gordon01.
 #'
 #' \code{nmrdata()} takes the binned data from Bruker's Amix and creates new
 #' categorical variables based on the sample ID's. It then removes any unwanted
@@ -82,11 +82,18 @@ nmrdata <- function(savecsv = FALSE,
   rep <- c(rep(c(1, 2, 3), 31))
   rep <- factor(rep, levels = (c(1:3)))
 
+  class_day <- interaction(class,
+                           day,
+                           drop = TRUE,
+                           sep = "."
+                           )
+
   nmrdata <- tibble::as_tibble(data.frame(sample_ids,
                                           class,
                                           day,
                                           tank,
                                           rep,
+                                          class_day,
                                           nmrdata[2:ncol(nmrdata)],
                                           check.names = FALSE))
   nmrdata <- dplyr::arrange(nmrdata, class, day)
@@ -108,7 +115,3 @@ nmrdata <- function(savecsv = FALSE,
 
   nmrdata
 }
-
-
-
-
