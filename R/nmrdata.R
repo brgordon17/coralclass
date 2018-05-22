@@ -1,12 +1,12 @@
 #' create nmrdata.
 #'
-#' \code{nmrdata()} is the pre-processed 1H-NMR data used for modelling in
-#' gordon01.
+#' \code{create_nmrdata()} is the pre-processed 1H-NMR data used for modelling
+#' in gordon01.
 #'
-#' \code{nmrdata()} takes the binned data from Bruker's Amix and creates new
-#' categorical variables based on the sample ID's. It then removes any unwanted
-#' variables as defined by the user (e.g. residual methanol or water peaks)
-#' before saving the results to \code{./data}
+#' \code{create_nmrdata()} takes the binned data from Bruker's Amix and creates
+#' new categorical variables based on the sample ID's. It then removes any
+#' unwanted variables as defined by the user (e.g. residual methanol or water
+#' peaks) before saving the results to \code{./data}
 #'
 #' @param savecsv Logical indicating if output should be saved as a \code{.csv}
 #' file to the current working directory
@@ -19,9 +19,9 @@
 #'
 #' @return Returns a dataframe of class tbl_df
 #'
-#' @note \code{nmrdata()} was not intended to be used outside of this package.
-#' Run this function with default values to reproduce the data used in this
-#' package
+#' @note \code{create_nmrdata()} was not intended to be used outside of this
+#' package. Run this function with default values to reproduce the data used in
+#' this package
 #'
 #' @seealso
 #' \href{https://www.bruker.com/products/mr/nmr/nmr-software/nmr-software/amix/overview.html}{Bruker AMIX}
@@ -32,12 +32,12 @@
 #'
 #' @export
 #'
-nmrdata <- function(savecsv = FALSE,
-                    saverda = TRUE,
-                    csvname = "nmrdata",
-                    remove.vars = TRUE,
-                    vars = c("3.31"),
-                    ...) {
+create_nmrdata <- function(savecsv = FALSE,
+                           saverda = TRUE,
+                           csvname = "nmrdata",
+                           remove.vars = TRUE,
+                           vars = c("3.31"),
+                           ...) {
 
   nmrdata  <-  readr::read_csv("./data-raw/nmrdata-raw-0.02.csv", na = "0")
   colnames(nmrdata)[1] <- "sample_ids"

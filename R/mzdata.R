@@ -1,6 +1,6 @@
 #' Create mzdata.
 #'
-#' \code{mzdata()} is the pre-processed LCMS data used for modelling in
+#' \code{create_mzdata()} is the pre-processed LCMS data used for modelling in
 #' gordon01.
 #'
 #' Initially, the function takes the raw output from xcms and removes unwanted
@@ -39,9 +39,10 @@
 #'
 #' @note Using \code{parallel = TRUE} is not reproducible. Future versions of
 #' this function may include support for reproducible RNG seeds when using
-#' parallel processing. Although this function is exported, \code{mzdata()} was
-#' not intended to be used outside of this package. Run this function with
-#' default values to reproduce the data used in this package.
+#' parallel processing. Although this function is exported,
+#' \code{create_mzdata()} was not intended to be used outside of this package.
+#' Run this function with default values to reproduce the data used in this
+#' package.
 #'
 #' @author Benjamin R. Gordon
 #'
@@ -54,12 +55,12 @@
 #'
 #' @export
 #'
-mzdata <- function(parallel = FALSE,
-                   seed = 100,
-                   savecsv = FALSE,
-                   saverda = TRUE,
-                   csvname = "mzdata"
-                   ) {
+create_mzdata <- function(parallel = FALSE,
+                          seed = 100,
+                          savecsv = FALSE,
+                          saverda = TRUE,
+                          csvname = "mzdata"
+                          ) {
 
   if (!requireNamespace("metabolomics", quietly = TRUE)) {
     stop("Package \"metabolomics\" needed for this function to work. Please
