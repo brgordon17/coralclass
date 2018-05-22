@@ -7,7 +7,7 @@
 #' \code{mzdata$class} as outcomes. The process is outlined as follows:
 #' \enumerate{
 #' \item The data is split into training and test sets using an 80:20 stratified
-#' split.
+#' split according to class and day \code{mzdata$class_day}.
 #' \item A list of random seeds is produced for each iteration of the CV
 #' process. For the 10-fold, repeated (3 times) CV used here, we require 10 * 3
 #' seeds for each of the 50 principal components assesed.
