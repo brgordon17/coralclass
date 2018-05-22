@@ -1,7 +1,7 @@
-#' Function to preprocess raw mzXML data.
+#' Create mzdata.
 #'
-#' \code{mzdata()} was used to tidy up \code{./data-raw/mzdata-raw.csv} and
-#' output \code{./data/mzdata.rda}.
+#' \code{mzdata()} is the pre-processed LCMS data used for modelling in
+#' gordon01.
 #'
 #' Initially, the function takes the raw output from xcms and removes unwanted
 #' data (e.g. retention times, isotopes, peak counts etc.). Then, it creates
