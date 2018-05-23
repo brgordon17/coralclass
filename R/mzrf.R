@@ -139,7 +139,8 @@ mzrf <- function(parallel = TRUE,
                          )
   }
 
-  preds <- caret::confusionMatrix(predict(mzrf, newdata = test_data), test_data$class)
+  preds <- caret::confusionMatrix(predict(mzrf, newdata = test_data),
+                                  test_data$class)
 
   custom_shapes <- plot_shapes("triangle")
   custom_colours <- seq_colours("red")
