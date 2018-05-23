@@ -7,7 +7,7 @@
 #' \code{nmrdata$class} as outcomes. The process is outlined as follows:
 #' \enumerate{
 #' \item The data is split into training and test sets using an 80:20 stratified
-#' split.
+#' split according to class and day \code{nmrdata$class_day}.
 #' \item A list of random seeds is produced for each iteration of the CV
 #' process. For the 10-fold, repeated (3 times) CV used here, we require 10 * 3
 #' seeds for each of the 50 principal components assesed.
@@ -55,12 +55,126 @@
 #'
 #' @export
 #'
+nmrpls <- function(parallel = TRUE,
+                   save.model = TRUE,
+                   view.plot = TRUE,
+                   save.plot = FALSE,
+                   plot.name = "nmrpls_cv_plot",
+                   model.name = "nmrpls_model",
+                   seed = 1978,
+                   pred.results = TRUE,
+                   ...) {
 
+  if (!requireNamespace("caret", quietly = TRUE)) {
+    stop("Package \"caret\" needed for this function to work. Please install
+         it.",
+         call. = FALSE)
+  }
 
+  ## Modelling setup -----------------------------------------------------------
+  set.seed(seed)
+  index <- caret::createDataPartition(nmrdata$class_day,
+                                      p = .8,
+                                      list = FALSE,
+                                      times = 1)
+  training <- data.frame(nmrdata[index, ], check.names = FALSE)
+  testing  <- data.frame(nmrdata[-index, ], check.names = FALSE)
 
+  set.seed(seed)
+  seeds <- vector(mode = "list", length = 31)
+  for(i in 1:30) seeds[[i]] <- sample.int(1000, 50)
+  seeds[[31]] <- sample.int(1000, 1)
 
+  ## Set up k-fold CV using trainControl. Note that "repeatedcv" automatically
+  ## performs stratified k-fold CV with its call to createMultiFolds()
+  ctrl <- caret::trainControl(method = "repeatedcv",
+                              number = 10,
+                              repeats = 3,
+                              summaryFunction = defaultSummary,
+                              seeds = seeds,
+                              savePredictions = "all",
+                              selectionFunction = "oneSE")
 
+  ## Create model --------------------------------------------------------------
+  if(parallel) {
+    doMC::registerDoMC()
+    set.seed(seed)
+    pls.model = caret::train(x = training[, -1:-6],
+                          y = training$class,
+                          method = "pls",
+                          tuneLength = 50,
+                          trControl = ctrl,
+                          preProc = c("center", "scale"),
+                          allowParallel = TRUE)
+  }
 
+  else {
+    set.seed(seed)
+    pls.model = caret::train(x = training[, -1:-6],
+                          y = training$class,
+                          method = "pls",
+                          tuneLength = 50,
+                          trControl = ctrl,
+                          preProc = c("center", "scale"),
+                          allowParallel = FALSE)
+  }
 
+  preds <- caret::confusionMatrix(predict(pls.model, newdata = testing),
+                                  testing$class)
 
+  custom_shapes <- plot_shapes("triangle")
+  custom_colours <- seq_colours("red")
+  train_plot <- ggplot(pls.model$results, aes(x = ncomp,
+                                           y = Accuracy)) +
+    geom_line(colour = custom_colours,
+              size = 1) +
+    geom_point(aes(x = ncomp[ncomp == pls.model$bestTune$ncomp],
+                   y = Accuracy[ncomp == pls.model$bestTune$ncomp]),
+               colour = custom_colours,
+               size = 3) +
+    scale_x_continuous(limits = c(1, 50),
+                       expand = c(0, 0),
+                       name = "Number of Components") +
+    scale_y_continuous(limits = c(0, 1),
+                       expand = c(0, 0)) +
+    theme_brg_grid() +
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "grey90",
+                                            size = 0.6),
+          axis.ticks.x = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.ticks.y = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.line.x = element_line(colour = "grey90",
+                                     size = 0.6)) +
+    annotate("text",
+             x = pls.model$bestTune$ncomp,
+             y = pls.model$results$Accuracy[pls.model$results$ncomp ==
+                                           pls.model$bestTune$ncomp] + 0.1,
+             label = paste("Best Tune (ncomp = ", pls.model$bestTune$ncomp, ")",
+                           sep = ""))
 
+  if(view.plot) {
+    print(train_plot)
+  }
+
+  if(save.plot) {
+    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+        width = 10,
+        height = 8,
+        useDingbats = FALSE)
+    print(train_plot)
+    dev.off()
+  }
+
+  if(save.model) {
+    saveRDS(pls.model, paste(c("./inst/extdata/", model.name, ".rds"), collapse = ""))
+  }
+
+  if(pred.results) {
+    print(preds)
+  }
+
+  pls.model
+
+}
