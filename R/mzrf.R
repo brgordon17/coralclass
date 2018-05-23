@@ -30,7 +30,7 @@
 #'
 #' @param parallel Logical indicating if parallel processing should be used.
 #' @param save.model Logical indicating if the model should be saved.
-#' @param view.plot Logical indicating if a plot of accuracy vs prcomp should
+#' @param view.plot Logical indicating if a plot of accuracy vs mtry should
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
