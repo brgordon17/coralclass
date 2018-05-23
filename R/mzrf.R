@@ -84,8 +84,8 @@ mzrf <- function(parallel = TRUE,
                                       list = FALSE,
                                       times = 1
                                       )
-  train <- rfdata[index, ]
-  test  <- rfdata[-index, ]
+  train_data <- rfdata[index, ]
+  test_data  <- rfdata[-index, ]
 
   # setup tuning grid for mtry (12 steps)
   tunegrid <- expand.grid(.mtry = c(25, 50, 75,
@@ -115,8 +115,8 @@ mzrf <- function(parallel = TRUE,
   if(parallel) {
     doMC::registerDoMC()
     set.seed(seed)
-    mzrf = caret::train(x = train[, -1:-6],
-                         y = train$class,
+    mzrf = caret::train(x = train_data[, -1:-6],
+                         y = train_data$class,
                          method = "rf",
                          trControl = ctrl,
                          preProc = c("center", "scale"),
@@ -128,8 +128,8 @@ mzrf <- function(parallel = TRUE,
 
   else {
     set.seed(seed)
-    mzrf = caret::train(x = train[, -1:-6],
-                         y = train$class,
+    mzrf = caret::train(x = train_data[, -1:-6],
+                         y = train_data$class,
                          method = "rf",
                          trControl = ctrl,
                          preProc = c("center", "scale"),
@@ -139,7 +139,7 @@ mzrf <- function(parallel = TRUE,
                          )
   }
 
-  preds <- caret::confusionMatrix(predict(mzrf, newdata = test), test$class)
+  preds <- caret::confusionMatrix(predict(mzrf, newdata = test_data), test_data$class)
 
   custom_shapes <- plot_shapes("triangle")
   custom_colours <- seq_colours("red")
