@@ -8,3 +8,4 @@
 ^figs$
 ^tables$
 ^docs$
+^\.travis\.yml$
