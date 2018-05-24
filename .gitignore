@@ -6,7 +6,4 @@ docs
 figs
 tables
 gordon01.Rproj
-data-raw
-data
-man
-inst
+inst/extdata/*.rds
