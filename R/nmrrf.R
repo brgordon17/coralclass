@@ -1,6 +1,6 @@
 #' Random Forests Analysis of 1H-NMR data.
 #'
-#' \code{nmrrf()} was used to perform the random forests analysis of the LCMS
+#' \code{nmrrf()} was used to perform the random forests analysis of the NMR
 #' data (\code{./data/nmrdata.rda})
 #'
 #' \code{nmrrf()} loads \code{nmrdata} and performs a RF analysis of the data
@@ -58,3 +58,142 @@
 #'
 #' @export
 #'
+nmrrf <- function(parallel = TRUE,
+                  save.model = TRUE,
+                  view.plot = TRUE,
+                  save.plot = FALSE,
+                  plot.name = "nmrrf_cv_plot",
+                  model.name = "nmrrf_model",
+                  seed = 1978,
+                  pred.results = TRUE,
+                  ...) {
+
+  if (!requireNamespace("caret", quietly = TRUE)) {
+    stop("Package \"caret\" needed for this function to work. Please install
+         it.",
+         call. = FALSE)
+  }
+
+  # Modelling setup ------------------------------------------------------------
+  rfdata <- data.frame(nmrdata, check.names = FALSE)
+  set.seed(seed)
+  index <- caret::createDataPartition(rfdata$class_day,
+                                      p = .8,
+                                      list = FALSE,
+                                      times = 1
+                                      )
+  train_data <- rfdata[index, ]
+  test_data  <- rfdata[-index, ]
+
+  # setup tuning grid for mtry (12 steps)
+  tunegrid <- expand.grid(.mtry = c(25, 50, 75,
+                                    seq(from = 100, to = 500, by = 50)
+                                    )
+                          )
+
+  # set seeds for each iteration of the stepwise model.
+  # model will run 15 steps from 25 - 1400
+  # I need 10 * 3 seeds for cv plus one for the final model (31).
+  # tunegrid length is auto set for each of the 30 cv's.
+  set.seed(seed)
+  seeds <- vector(mode = "list", length = 31)
+  for(i in 1:30) seeds[[i]] <- sample.int(1000, length(tunegrid[,1]))
+  seeds[[31]] <- sample.int(1000, 1)
+
+  # Setup ctrl
+  ctrl <- caret::trainControl(method = "repeatedcv",
+                              number = 10,
+                              repeats = 3,
+                              summaryFunction = defaultSummary,
+                              seeds = seeds,
+                              savePredictions = "all",
+                              selectionFunction = "oneSE"
+                              )
+
+  ## Create model --------------------------------------------------------------
+  if(parallel) {
+    doMC::registerDoMC()
+    set.seed(seed)
+    nmrrf = caret::train(x = train_data[, -1:-6],
+                        y = train_data$class,
+                        method = "rf",
+                        trControl = ctrl,
+                        preProc = c("center", "scale"),
+                        allowParallel = TRUE,
+                        importance = TRUE,
+                        tuneGrid = tunegrid
+                        )
+  }
+
+  else {
+    set.seed(seed)
+    nmrrf = caret::train(x = train_data[, -1:-6],
+                        y = train_data$class,
+                        method = "rf",
+                        trControl = ctrl,
+                        preProc = c("center", "scale"),
+                        allowParallel = FALSE,
+                        importance = TRUE,
+                        tuneGrid = tunegrid
+                        )
+  }
+
+  preds <- caret::confusionMatrix(predict(nmrrf, newdata = test_data),
+                                  test_data$class)
+
+  custom_shapes <- plot_shapes("triangle")
+  custom_colours <- seq_colours("red")
+  train_plot <- ggplot(nmrrf$results, aes(x = mtry,
+                                         y = Accuracy)) +
+    geom_line(colour = custom_colours,
+              size = 1) +
+    geom_point(aes(x = mtry[mtry == nmrrf$bestTune$mtry],
+                   y = Accuracy[mtry == nmrrf$bestTune$mtry]),
+               colour = custom_colours,
+               size = 3) +
+    scale_x_continuous(limits = c(0, 550),
+                       expand = c(0, 0),
+                       name = "mtry") +
+    scale_y_continuous(limits = c(0, 1),
+                       expand = c(0, 0)) +
+    theme_brg_grid() +
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "grey90",
+                                            size = 0.6),
+          axis.ticks.x = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.ticks.y = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.line.x = element_line(colour = "grey90",
+                                     size = 0.6)) +
+    annotate("text",
+             x = nmrrf$bestTune$mtry,
+             y = nmrrf$results$Accuracy[nmrrf$results$mtry ==
+                                         nmrrf$bestTune$mtry] + 0.1,
+             label = paste("Best Tune (mtry = ", nmrrf$bestTune$mtry, ")",
+                           sep = ""))
+
+  if(view.plot) {
+    print(train_plot)
+  }
+
+  if(save.plot) {
+    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+        width = 10,
+        height = 8,
+        useDingbats = FALSE)
+    print(train_plot)
+    dev.off()
+  }
+
+  if(save.model) {
+    saveRDS(nmrrf, paste(c("./inst/extdata/", model.name, ".rds"), collapse = ""))
+  }
+
+  if(pred.results) {
+    print(preds)
+  }
+
+  nmrrf
+
+}
