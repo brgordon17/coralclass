@@ -11,23 +11,26 @@
 #' @param scale Logical indicating if variables should be scaled to unit
 #' variance.
 #' @param center Logical indicating if variables should be zero centered.
-#' @param savepdf Logical indicating if plot should be saved to \code{.pdf} in
+#' @param view.plot Logical indicating if plot should be printed to the plot
+#' viewer.
+#' @param save.pdf Logical indicating if plot should be saved to \code{.pdf} in
 #' the \code{./figs} directory.
-#' @param savepng Logical indicating if plot should be saved to \code{.png} in
+#' @param save.png Logical indicating if plot should be saved to \code{.png} in
 #' the \code{./figs} directory.
-#' @param plotname Name of plot
+#' @param save.gg Logical indicating if ggplot object should be saved to
+#' \code{./inst/extdata/mzpca_ggobject.rds}.
+#' @param plot.name Name of plot.
+#' @param seed An integer for setting the RNG state.
 #' @param ... Other arguments passed on to individual methods.
 #'
 #' @return returns a list with class \code{"prcomp"}.
 #'
 #' @note Although this function is exported, \code{mzpca()} was not intended to
-#' be used outside of this package. Run this function with default values to
-#' reproduce the results in this package.
+#' be used outside of this package.
 #'
 #' @seealso
 #' \code{\link[stats]{prcomp}}
 #' \code{\link[ggplot2]{ggplot}}
-#' \code{\link{plot_shapes}}
 #' \code{\link{qual_colours}}
 #' \code{\link{theme_brg_grid}}
 #'
@@ -41,11 +44,16 @@
 #'
 mzpca <- function(scale = FALSE,
                   center = TRUE,
-                  savepdf = TRUE,
-                  savepng = TRUE,
-                  plotname = "mzpca_plot",
+                  view.plot = TRUE,
+                  save.pdf = FALSE,
+                  save.png = FALSE,
+                  save.gg = FALSE,
+                  plot.name = "mzpca_plot",
+                  seed = 1978,
                   ...) {
 
+
+  set.seed(seed)
   pca <- prcomp(mzdata[-1:-6], scale = scale, center = center)
 
   # Define variables for PCA plot ----------------------------------------------
@@ -53,58 +61,46 @@ mzpca <- function(scale = FALSE,
   scores <- data.frame(mzdata[, 2:6], pca$x)
   x_lab <- paste("PC1", " (", round(exp_var[1] * 100, 2), "%)", sep =  "")
   y_lab <- paste("PC2", " (", round(exp_var[2] * 100, 2), "%)", sep =  "")
-  custom_shapes <- plot_shapes()
   custom_colors <- qual_colours()
-  breaks = c(levels(scores$class))
-  labels = c(levels(scores$class))
 
-  # create plot base -----------------------------------------------------------
-  pcaplot_base <- ggplot(data = scores,
-                         aes(x = PC1,
-                             y = PC2,
-                             shape = class,
-                             fill = class,
-                             color = class)) +
-    scale_shape_manual(values = custom_shapes,
-                       breaks = breaks,
-                       labels = labels,
-                       name = NULL) +
-    scale_color_manual(values = adjustcolor(custom_colors, alpha.f = 0.9),
-                       breaks = breaks,
-                       labels = labels,
-                       name = NULL) +
-    scale_fill_manual(values = adjustcolor(custom_colors, alpha.f = 0.5),
-                      breaks = breaks,
-                      labels = labels,
-                      name = NULL) +
-    scale_x_continuous(expand = c(0.15, 0),
-                       limits = NULL,
-                       name = x_lab) +
-    scale_y_continuous(expand = c(0.15, 0),
-                       limits = NULL,
-                       name = y_lab)
 
   # create plot ----------------------------------------------------------------
-  pcaplot <- pcaplot_base +
+  pcaplot <-
+    ggplot(data = scores,
+           aes(x = PC1,
+               y = PC2,
+               color = class,
+               fill = class,
+               shape = class)) +
     geom_point(size = 2.5,
                stroke = 0.7,
                position = position_jitter(width = 0.01 * diff(range(scores$PC1)),
                                           height = 0.01 * diff(range(scores$PC2))
-                                          )) +
-   theme_brg_grid()
+               )) +
+    labs(x = x_lab, y = y_lab) +
+    scale_shape_manual(values = c(21:25)) +
+    scale_color_manual(values = adjustcolor(custom_colors,
+                                            alpha.f = 0.9)) +
+    scale_fill_manual(values = adjustcolor(custom_colors,
+                                           alpha.f = 0.5)) +
+    theme_brg_grid()
 
-  # save plot ------------------------------------------------------------------
-  if(savepdf) {
-    pdf(paste(c("./figs/", plotname, ".pdf"), collapse = ""),
+  # saves ----------------------------------------------------------------------
+  if(save.gg) {
+    saveRDS(pcaplot, "./inst/extdata/mzpca_ggobject.rds")
+  }
+
+  if(save.pdf) {
+    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
         width = 10,
         height = 8,
         useDingbats = FALSE)
     print(pcaplot)
     dev.off()
   }
-  if(savepng) {
+  if(save.png) {
     ppi <- 600
-    png(paste(c("./figs/", plotname, ".png"), collapse = ""),
+    png(paste(c("./figs/", plot.name, ".png"), collapse = ""),
         width = 8*ppi,
         height = 6*ppi,
         res = ppi)
@@ -112,6 +108,8 @@ mzpca <- function(scale = FALSE,
     dev.off()
   }
 
-  print(pcaplot)
-}
+  if(view.plot) {
+    print(pcaplot)
+  }
 
+}

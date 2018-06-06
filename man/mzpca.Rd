@@ -4,8 +4,9 @@
 \alias{mzpca}
 \title{Function to perform PCA for LCMS data.}
 \usage{
-mzpca(scale = FALSE, center = TRUE, savepdf = TRUE, savepng = TRUE,
-  plotname = "mzpca_plot", ...)
+mzpca(scale = FALSE, center = TRUE, view.plot = TRUE, save.pdf = FALSE,
+  save.png = FALSE, save.gg = FALSE, plot.name = "mzpca_plot",
+  seed = 1978, ...)
 }
 \arguments{
 \item{scale}{Logical indicating if variables should be scaled to unit
@@ -13,13 +14,21 @@ variance.}
 
 \item{center}{Logical indicating if variables should be zero centered.}
 
-\item{savepdf}{Logical indicating if plot should be saved to \code{.pdf} in
+\item{view.plot}{Logical indicating if plot should be printed to the plot
+viewer.}
+
+\item{save.pdf}{Logical indicating if plot should be saved to \code{.pdf} in
 the \code{./figs} directory.}
 
-\item{savepng}{Logical indicating if plot should be saved to \code{.png} in
+\item{save.png}{Logical indicating if plot should be saved to \code{.png} in
 the \code{./figs} directory.}
 
-\item{plotname}{Name of plot}
+\item{save.gg}{Logical indicating if ggplot object should be saved to
+\code{./inst/extdata/mzpca_ggobject.rds}.}
+
+\item{plot.name}{Name of plot.}
+
+\item{seed}{An integer for setting the RNG state.}
 
 \item{...}{Other arguments passed on to individual methods.}
 }
@@ -38,13 +47,11 @@ or a \code{.png} file, or both.
 }
 \note{
 Although this function is exported, \code{mzpca()} was not intended to
-be used outside of this package. Run this function with default values to
-reproduce the results in this package.
+be used outside of this package.
 }
 \seealso{
 \code{\link[stats]{prcomp}}
 \code{\link[ggplot2]{ggplot}}
-\code{\link{plot_shapes}}
 \code{\link{qual_colours}}
 \code{\link{theme_brg_grid}}
 }
