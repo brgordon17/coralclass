@@ -17,6 +17,9 @@
 #'
 #' @seealso \code{\link[ggplot2]{theme_light}}
 #'
+#' @note Although this function is exported, \code{theme_brg_grid()} was not
+#' intended to be used outside of this package.
+#'
 #' @author Benjamin R. Gordon
 #'
 #' @export
