@@ -16,17 +16,51 @@ knitr::opts_chunk$set(
 
 # gordon01
 
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+CHANGE!!! zenodo DOI badge
+[![DOI](https://zenodo.org/badge/6271972.svg)](https://zenodo.org/badge/latestdoi/6271972)
+
+### Authors
+* Benjamin R. Gordon
+* Check if I should add others? I may not need to if it's a thesis repo.
+
+### Contributors
+* Other "authors" may be able to go here instead of into the authors section.
 
 ### Overview
-This repositry contains the source code and data for our paper...
+This repositry contains the data and analysis of our research into the effects
+of ocean acidification and warming on the metabolome of the coral 
+*Acopora aspera*. It has been permanantly archived at the DOI indicated by the 
+above linked badge.
 
-### Repositry Structure
-* `analysis/`: `.Rmd` files that describe the workflow and analysis are
-located here
-* `data/`: Preprocessed data used in the analysis is located here
-* `data-raw/`: The XCMS output and preprocessing scripts are located here.
-* `man/`: Function documentation
-* `R/`: Custom function used in the analysis are stored here
+### R Package
+This repositry is organised as an R package to ensure reproducibility of our
+analysis. It provides funcions for all steps of the analysis including 
+**preprocessing**, **modelling** as well as **figure and table generation**.
+Please note that this package and its functions have been written explicitly for
+this project and may have limited use outside of the package.
+
+[![Travis-CI Build Status](https://travis-ci.org/<USERNAME>/<REPO>.svg?branch=master)](https://travis-ci.org/<USERNAME>/<REPO>)
+
+### Package Structure
+* `data/`: Contains the preprocessed data as R data files.
+* `data-raw/`: Contains the raw data and a small subset of our `.mzXML` data
+* `inst/`: Contains the `extdata/` folder that holds `.csv` files of the
+preprocessed data.
+* `man/`: Contains the function and dataset documentation.
+* `R/`: Contains the custom functions used in the analysis.
+
+### Pacakage Installation
+To install this package within R, ensure you have `devtools::` installed and 
+enter the code below at the R prompt:
+```{r pck_install, eval=FALSE}
+devtools::install_github("brgordon17/gordon01")
+```
 
 ### Citation
+Add citation
+
+### R Session Information
+```{r session}
+devtools::session_info()
+```
+
