@@ -12,8 +12,7 @@
 #' @return Returns a dataframe of class \code{tbl_df}
 #'
 #' @note \code{create_litmz()} was not intended to be used outside of this
-#' package. Run this function with default values to reproduce the data used in
-#' this package
+#' package.
 #'
 #' @author Benjamin R. Gordon
 #'

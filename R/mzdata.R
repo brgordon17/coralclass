@@ -41,8 +41,6 @@
 #' this function may include support for reproducible RNG seeds when using
 #' parallel processing. Although this function is exported,
 #' \code{create_mzdata()} was not intended to be used outside of this package.
-#' Run this function with default values to reproduce the data used in this
-#' package.
 #'
 #' @author Benjamin R. Gordon
 #'

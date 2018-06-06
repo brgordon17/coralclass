@@ -37,8 +37,7 @@ peaks) before saving the results to \code{./data}
 }
 \note{
 \code{create_nmrdata()} was not intended to be used outside of this
-package. Run this function with default values to reproduce the data used in
-this package
+package.
 }
 \seealso{
 \href{https://www.bruker.com/products/mr/nmr/nmr-software/nmr-software/amix/overview.html}{Bruker AMIX}
