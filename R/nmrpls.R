@@ -31,6 +31,8 @@
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
+#' @param save.gg Logical indicating if ggplot object should be saved to
+#' \code{./inst/extdata/}
 #' @param plot.name Name of plot if \code{save.plot = TRUE}.
 #' @param model.name Name of model if \code{save.model = TRUE}.
 #' @param seed An integer for setting the RNG state.
@@ -41,8 +43,7 @@
 #' @return returns a list with class \code{train}.
 #'
 #' @note Although this function is exported, \code{nmrpls()} was not intended to
-#' be used outside of this package. Run this function with default values to
-#' reproduce the results in this package.
+#' be used outside of this package.
 #'
 #' @seealso
 #' \code{\link[caret]{train}}
@@ -56,9 +57,10 @@
 #' @export
 #'
 nmrpls <- function(parallel = TRUE,
-                   save.model = TRUE,
+                   save.model = FALSE,
                    view.plot = TRUE,
                    save.plot = FALSE,
+                   save.gg = FALSE,
                    plot.name = "nmrpls_cv_plot",
                    model.name = "nmrpls_model",
                    seed = 1978,
@@ -85,8 +87,6 @@ nmrpls <- function(parallel = TRUE,
   for(i in 1:30) seeds[[i]] <- sample.int(1000, 50)
   seeds[[31]] <- sample.int(1000, 1)
 
-  ## Set up k-fold CV using trainControl. Note that "repeatedcv" automatically
-  ## performs stratified k-fold CV with its call to createMultiFolds()
   ctrl <- caret::trainControl(method = "repeatedcv",
                               number = 10,
                               repeats = 3,
@@ -99,60 +99,60 @@ nmrpls <- function(parallel = TRUE,
   if(parallel) {
     doMC::registerDoMC()
     set.seed(seed)
-    pls.model = caret::train(x = training[, -1:-6],
-                          y = training$class,
-                          method = "pls",
-                          tuneLength = 50,
-                          trControl = ctrl,
-                          preProc = c("center", "scale"),
-                          allowParallel = TRUE)
+    nmrpls <- caret::train(x = training[, -1:-6],
+                           y = training$class,
+                           method = "pls",
+                           tuneLength = 50,
+                           trControl = ctrl,
+                           preProc = c("center", "scale"),
+                           allowParallel = TRUE)
   }
 
   else {
     set.seed(seed)
-    pls.model = caret::train(x = training[, -1:-6],
-                          y = training$class,
-                          method = "pls",
-                          tuneLength = 50,
-                          trControl = ctrl,
-                          preProc = c("center", "scale"),
-                          allowParallel = FALSE)
+    nmrpls <- caret::train(x = training[, -1:-6],
+                           y = training$class,
+                           method = "pls",
+                           tuneLength = 50,
+                           trControl = ctrl,
+                           preProc = c("center", "scale"),
+                           allowParallel = FALSE)
   }
 
-  preds <- caret::confusionMatrix(predict(pls.model, newdata = testing),
+  preds <- caret::confusionMatrix(predict(nmrpls, newdata = testing),
                                   testing$class)
 
-  custom_shapes <- plot_shapes("triangle")
   custom_colours <- seq_colours("red")
-  train_plot <- ggplot(pls.model$results, aes(x = ncomp,
+
+  train_plot <- ggplot(nmrpls$results, aes(x = ncomp,
                                            y = Accuracy)) +
     geom_line(colour = custom_colours,
               size = 1) +
-    geom_point(aes(x = ncomp[ncomp == pls.model$bestTune$ncomp],
-                   y = Accuracy[ncomp == pls.model$bestTune$ncomp]),
+    geom_point(aes(x = ncomp[ncomp == 21],
+                   y = Accuracy[ncomp == 21]),
                colour = custom_colours,
                size = 3) +
     scale_x_continuous(limits = c(1, 50),
-                       expand = c(0, 0),
+                       expand = waiver(),
                        name = "Number of Components") +
     scale_y_continuous(limits = c(0, 1),
-                       expand = c(0, 0)) +
+                       expand = waiver()) +
     theme_brg_grid() +
     theme(panel.grid.major.x = element_blank(),
           panel.grid.major.y = element_line(colour = "grey90",
                                             size = 0.6),
-          axis.ticks.x = element_line(colour = "grey90",
-                                      size = 0.6),
+          axis.ticks.x = element_blank(),
           axis.ticks.y = element_line(colour = "grey90",
                                       size = 0.6),
-          axis.line.x = element_line(colour = "grey90",
-                                     size = 0.6)) +
+          axis.line.x = element_blank()) +
     annotate("text",
-             x = pls.model$bestTune$ncomp,
-             y = pls.model$results$Accuracy[pls.model$results$ncomp ==
-                                           pls.model$bestTune$ncomp] + 0.1,
-             label = paste("Best Tune (ncomp = ", pls.model$bestTune$ncomp, ")",
-                           sep = ""))
+             x = 21,
+             y = 0.7708333 + 0.15,
+             label = "NMR PLS-DA") +
+    annotate("text",
+             x = 21,
+             y = 0.7708333 + 0.08,
+             label = "Best Tune (21, 0.77)")
 
   if(view.plot) {
     print(train_plot)
@@ -167,14 +167,19 @@ nmrpls <- function(parallel = TRUE,
     dev.off()
   }
 
+  if (save.gg) {
+    saveRDS(train_plot, "./inst/extdata/nmrpls_tune_ggobject.rds")
+  }
+
   if(save.model) {
-    saveRDS(pls.model, paste(c("./inst/extdata/", model.name, ".rds"), collapse = ""))
+    saveRDS(nmrpls, paste(c("./inst/extdata/", model.name, ".rds"),
+                          collapse = ""))
   }
 
   if(pred.results) {
     print(preds)
   }
 
-  pls.model
+  nmrpls
 
 }

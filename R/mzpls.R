@@ -31,6 +31,8 @@
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
+#' @param save.gg Logical indicating if ggplot object should be saved to
+#' \code{./inst/extdata/}
 #' @param plot.name Name of plot if \code{save.plot = TRUE}.
 #' @param model.name Name of model if \code{save.model = TRUE}.
 #' @param seed An integer for setting the RNG state.
@@ -41,8 +43,7 @@
 #' @return returns a list with class \code{train}.
 #'
 #' @note Although this function is exported, \code{mzpls()} was not intended to
-#' be used outside of this package. Run this function with default values to
-#' reproduce the results in this package.
+#' be used outside of this package.
 #'
 #' @seealso
 #' \code{\link[caret]{train}}
@@ -59,6 +60,7 @@ mzpls <- function(parallel = TRUE,
                   save.model = TRUE,
                   view.plot = TRUE,
                   save.plot = FALSE,
+                  save.gg = FALSE,
                   plot.name = "mzpls_cv_plot",
                   model.name = "mzpls_model",
                   seed = 1978,
@@ -104,62 +106,61 @@ mzpls <- function(parallel = TRUE,
   if(parallel) {
     doMC::registerDoMC()
     set.seed(seed)
-    mzpls = caret::train(x = train[, -1:-6],
-                         y = train$class,
-                         method = "pls",
-                         tuneLength = 50,
-                         trControl = ctrl,
-                         preProc = c("center", "scale"),
-                         allowParallel = TRUE
-                         )
+    mzpls <- caret::train(x = train[, -1:-6],
+                          y = train$class,
+                          method = "pls",
+                          tuneLength = 50,
+                          trControl = ctrl,
+                          preProc = c("center", "scale"),
+                          allowParallel = TRUE
+                          )
   }
 
   else {
     set.seed(seed)
-    mzpls = caret::train(x = train[, -1:-6],
-                         y = train$class,
-                         method = "pls",
-                         tuneLength = 50,
-                         trControl = ctrl,
-                         preProc = c("center", "scale"),
-                         allowParallel = FALSE
-                         )
+    mzpls <- caret::train(x = train[, -1:-6],
+                          y = train$class,
+                          method = "pls",
+                          tuneLength = 50,
+                          trControl = ctrl,
+                          preProc = c("center", "scale"),
+                          allowParallel = FALSE
+                          )
   }
 
   preds <- caret::confusionMatrix(predict(mzpls, newdata = test), test$class)
 
-  custom_shapes <- plot_shapes("triangle")
   custom_colours <- seq_colours("red")
-  train_plot <- ggplot(mzpls$results, aes(x = ncomp,
-                                            y = Accuracy)
-                         ) +
+
+  train_plot <- ggplot(mzpls$results,
+                       aes(x = ncomp, y = Accuracy)) +
     geom_line(colour = custom_colours,
               size = 1) +
-    geom_point(aes(x = ncomp[ncomp == mzpls$bestTune$ncomp],
-                    y = Accuracy[ncomp == mzpls$bestTune$ncomp]),
+    geom_point(aes(x = ncomp[ncomp == 16],
+                   y = Accuracy[ncomp == 16]),
                 colour = custom_colours,
                 size = 3) +
     scale_x_continuous(limits = c(1, 50),
-                        expand = c(0, 0),
-                        name = "Number of Components") +
+                       expand = waiver(),
+                       name = "Number of Components") +
     scale_y_continuous(limits = c(0, 1),
-                        expand = c(0, 0)) +
+                       expand = waiver()) +
     theme_brg_grid() +
     theme(panel.grid.major.x = element_blank(),
           panel.grid.major.y = element_line(colour = "grey90",
                                             size = 0.6),
-          axis.ticks.x = element_line(colour = "grey90",
-                                      size = 0.6),
+          axis.ticks.x = element_blank(),
           axis.ticks.y = element_line(colour = "grey90",
                                       size = 0.6),
-          axis.line.x = element_line(colour = "grey90",
-                                     size = 0.6)) +
+          axis.line.x = element_blank()) +
     annotate("text",
-              x = mzpls$bestTune$ncomp,
-              y = mzpls$results$Accuracy[mzpls$results$ncomp ==
-                                          mzpls$bestTune$ncomp] + 0.1,
-              label = paste("Best Tune (ncomp = ", mzpls$bestTune$ncomp, ")",
-                            sep = ""))
+             x = 16,
+             y = 0.8428571 + 0.15,
+             label = "LCMS PLS-DA") +
+    annotate("text",
+              x = 16,
+              y = 0.8428571 + 0.08,
+              label = "Best Tune (16, 0.84)")
 
   if(view.plot) {
     print(train_plot)
@@ -174,8 +175,12 @@ mzpls <- function(parallel = TRUE,
     dev.off()
   }
 
-  if(save.model) {
+  if(save.mzpls) {
     saveRDS(mzpls, paste(c("./inst/extdata/", model.name, ".rds"), collapse = ""))
+  }
+
+  if (save.gg) {
+    saveRDS(train_plot, "./inst/extdata/mzpls_tune_ggobject.rds")
   }
 
   if(pred.results) {

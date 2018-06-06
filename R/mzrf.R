@@ -34,6 +34,8 @@
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
+#' @param save.gg Logical indicating if ggplot object should be saved to
+#' \code{./inst/extdata/}
 #' @param plot.name Name of plot if \code{save.plot = TRUE}.
 #' @param model.name Name of model if \code{save.model = TRUE}.
 #' @param seed An integer for setting the RNG state.
@@ -44,8 +46,7 @@
 #' @return returns a list with class \code{train}.
 #'
 #' @note Although this function is exported, \code{mzrf()} was not intended to
-#' be used outside of this package. Run this function with default values to
-#' reproduce the results in this package.
+#' be used outside of this package.
 #'
 #' @seealso
 #' \code{\link[caret]{train}}
@@ -59,9 +60,10 @@
 #' @export
 #'
 mzrf <- function(parallel = TRUE,
-                 save.model = TRUE,
+                 save.model = FALSE,
                  view.plot = TRUE,
                  save.plot = FALSE,
+                 save.gg = FALSE,
                  plot.name = "mzrf_cv_plot",
                  model.name = "mzrf_model",
                  seed = 1978,
@@ -87,21 +89,15 @@ mzrf <- function(parallel = TRUE,
   train_data <- rfdata[index, ]
   test_data  <- rfdata[-index, ]
 
-  # setup tuning grid for mtry (12 steps)
   tunegrid <- expand.grid(.mtry = c(25, 50, 75,
                                     seq(from = 100, to = 500, by = 50)
                                     ))
 
-  # set seeds for each iteration of the stepwise model.
-  # model will run 15 steps from 25 - 1400
-  # I need 10 * 3 seeds for cv plus one for the final model (31).
-  # tunegrid length is auto set for each of the 30 cv's.
   set.seed(seed)
   seeds <- vector(mode = "list", length = 31)
   for(i in 1:30) seeds[[i]] <- sample.int(1000, length(tunegrid[,1]))
   seeds[[31]] <- sample.int(1000, 1)
 
-  # Setup ctrl
   ctrl <- caret::trainControl(method = "repeatedcv",
                               number = 10,
                               repeats = 3,
@@ -115,7 +111,7 @@ mzrf <- function(parallel = TRUE,
   if(parallel) {
     doMC::registerDoMC()
     set.seed(seed)
-    mzrf = caret::train(x = train_data[, -1:-6],
+    mzrf <- caret::train(x = train_data[, -1:-6],
                          y = train_data$class,
                          method = "rf",
                          trControl = ctrl,
@@ -128,7 +124,7 @@ mzrf <- function(parallel = TRUE,
 
   else {
     set.seed(seed)
-    mzrf = caret::train(x = train_data[, -1:-6],
+    mzrf <- caret::train(x = train_data[, -1:-6],
                          y = train_data$class,
                          method = "rf",
                          trControl = ctrl,
@@ -142,38 +138,37 @@ mzrf <- function(parallel = TRUE,
   preds <- caret::confusionMatrix(predict(mzrf, newdata = test_data),
                                   test_data$class)
 
-  custom_shapes <- plot_shapes("triangle")
   custom_colours <- seq_colours("red")
+
   train_plot <- ggplot(mzrf$results, aes(x = mtry,
-                                         y = Accuracy)
-                       ) +
+                                         y = Accuracy)) +
     geom_line(colour = custom_colours,
               size = 1) +
-    geom_point(aes(x = mtry[mtry == mzrf$bestTune$mtry],
-                   y = Accuracy[mtry == mzrf$bestTune$mtry]),
+    geom_point(aes(x = mtry[mtry == 350],
+                   y = Accuracy[mtry == 350]),
                colour = custom_colours,
                size = 3) +
-    scale_x_continuous(limits = c(25, 550),
+    scale_x_continuous(limits = c(10, 550),
                        expand = c(0, 0),
                        name = "mtry") +
     scale_y_continuous(limits = c(0, 1),
-                       expand = c(0, 0)) +
+                       expand = waiver()) +
     theme_brg_grid() +
     theme(panel.grid.major.x = element_blank(),
           panel.grid.major.y = element_line(colour = "grey90",
                                             size = 0.6),
-          axis.ticks.x = element_line(colour = "grey90",
-                                      size = 0.6),
+          axis.ticks.x = element_blank(),
           axis.ticks.y = element_line(colour = "grey90",
                                       size = 0.6),
-          axis.line.x = element_line(colour = "grey90",
-                                     size = 0.6)) +
+          axis.line.x = element_blank()) +
     annotate("text",
-             x = mzrf$bestTune$mtry,
-             y = mzrf$results$Accuracy[mzrf$results$mtry ==
-                                         mzrf$bestTune$mtry] + 0.1,
-             label = paste("Best Tune (mtry = ", mzrf$bestTune$mtry, ")",
-                           sep = ""))
+             x = 350,
+             y = 0.8428571 + 0.15,
+             label = "LCMS RF") +
+    annotate("text",
+             x = 350,
+             y = 0.8426587 + 0.08,
+             label = "Best Tune (350, 0.84)")
 
   if(view.plot) {
     print(train_plot)
@@ -186,6 +181,10 @@ mzrf <- function(parallel = TRUE,
         useDingbats = FALSE)
     print(train_plot)
     dev.off()
+  }
+
+  if (save.gg) {
+    saveRDS(train_plot, "./inst/extdata/mzrf_tune_ggobject.rds")
   }
 
   if(save.model) {
