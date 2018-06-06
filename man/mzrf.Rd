@@ -4,8 +4,8 @@
 \alias{mzrf}
 \title{Random Forests Analysis of LCMS data.}
 \usage{
-mzrf(parallel = TRUE, save.model = TRUE, view.plot = TRUE,
-  save.plot = FALSE, plot.name = "mzrf_cv_plot",
+mzrf(parallel = TRUE, save.model = FALSE, view.plot = TRUE,
+  save.plot = FALSE, save.gg = FALSE, plot.name = "mzrf_cv_plot",
   model.name = "mzrf_model", seed = 1978, pred.results = TRUE, ...)
 }
 \arguments{
@@ -18,6 +18,9 @@ be printed to the plot viewer.}
 
 \item{save.plot}{Logical indicating if plot should be saved to a \code{.pdf}
 in the \code{./figs} directory.}
+
+\item{save.gg}{Logical indicating if ggplot object should be saved to
+\code{./inst/extdata/}}
 
 \item{plot.name}{Name of plot if \code{save.plot = TRUE}.}
 
@@ -65,8 +68,7 @@ deviation.
 }
 \note{
 Although this function is exported, \code{mzrf()} was not intended to
-be used outside of this package. Run this function with default values to
-reproduce the results in this package.
+be used outside of this package.
 }
 \seealso{
 \code{\link[caret]{train}}

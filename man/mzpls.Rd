@@ -5,7 +5,7 @@
 \title{PLS-DA analysis of LCMS data.}
 \usage{
 mzpls(parallel = TRUE, save.model = TRUE, view.plot = TRUE,
-  save.plot = FALSE, plot.name = "mzpls_cv_plot",
+  save.plot = FALSE, save.gg = FALSE, plot.name = "mzpls_cv_plot",
   model.name = "mzpls_model", seed = 1978, pred.results = TRUE, ...)
 }
 \arguments{
@@ -18,6 +18,9 @@ be printed to the plot viewer.}
 
 \item{save.plot}{Logical indicating if plot should be saved to a \code{.pdf}
 in the \code{./figs} directory.}
+
+\item{save.gg}{Logical indicating if ggplot object should be saved to
+\code{./inst/extdata/}}
 
 \item{plot.name}{Name of plot if \code{save.plot = TRUE}.}
 
@@ -62,8 +65,7 @@ deviation.
 }
 \note{
 Although this function is exported, \code{mzpls()} was not intended to
-be used outside of this package. Run this function with default values to
-reproduce the results in this package.
+be used outside of this package.
 }
 \seealso{
 \code{\link[caret]{train}}
