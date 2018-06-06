@@ -21,6 +21,8 @@ Imports:
     doMC,
     dplyr,
     ggplot2,
+    grid,
+    gridExtra,
     magrittr,
     readr,
     tibble,
