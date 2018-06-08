@@ -99,10 +99,9 @@ figure_pca <- function(view.plot = TRUE,
 #' \code{figure_tuning()} reproduces the compound figure of the LCMS and NMR
 #' model tuning results in section x.xx of Benjamin Gordon's PhD thesis.
 #'
-#' \code{figure_tuning()} loads the models and the saved gg objects in
-#' \code{./inst/extdata/}; extracts the legend from the mzpca plot; adds plot
-#' labels (a, b, c and d) and saves the plot to \code{./figs/} as a \code{.pdf}
-#' file.
+#' \code{figure_tuning()} loads gg objects that were saved to
+#' \code{./inst/extdata/} by the four modelling functions; adds plot labels
+#' (a, b, c and d) and saves the plot to \code{./figs/} as a \code{.pdf} file.
 #'
 #' @param view.plot Logical indicating if the plot should be printed to the plot
 #' viewer.
