@@ -21,10 +21,9 @@ viewer.}
 model tuning results in section x.xx of Benjamin Gordon's PhD thesis.
 }
 \details{
-\code{figure_tuning()} loads the models and the saved gg objects in
-\code{./inst/extdata/}; extracts the legend from the mzpca plot; adds plot
-labels (a, b, c and d) and saves the plot to \code{./figs/} as a \code{.pdf}
-file.
+\code{figure_tuning()} loads gg objects that were saved to
+\code{./inst/extdata/} by the four modelling functions; adds plot labels
+(a, b, c and d) and saves the plot to \code{./figs/} as a \code{.pdf} file.
 }
 \note{
 Although this function is exported, \code{figure_tuning()} was not
