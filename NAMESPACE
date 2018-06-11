@@ -3,6 +3,7 @@
 export(create_litmz)
 export(create_mzdata)
 export(create_nmrdata)
+export(cv_perform_table)
 export(figure_pca)
 export(figure_tuning)
 export(mzdata_raw)
