@@ -9,3 +9,4 @@
 ^tables$
 ^docs$
 ^\.travis\.yml$
+^inst/extdata$
