@@ -6,4 +6,4 @@ docs
 figs
 tables
 gordon01.Rproj
-inst/extdata/*.rds
+inst/extdata/
