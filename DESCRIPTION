@@ -1,7 +1,7 @@
 Package: gordon01
 Type: Package
 Title: LCMS Metabolomics Analysis of Coral From Heron Island 2011
-Version: 0.0.0
+Version: 0.0.0.9000
 Authors@R: person("Benjamin", "Gordon", email = "brgordon17@gmail.com", 
     role = c("aut", "cre"))
 Description: This package contains all the analysis and results for the ocean 
@@ -13,10 +13,10 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Depends: 
+Depends:
     R (>= 2.10),
     caret
-Imports: 
+Imports:
     devtools,
     doMC,
     dplyr,
@@ -27,8 +27,7 @@ Imports:
     readr,
     tibble,
     xcms
-Suggests: 
+Suggests:
     CAMERA,
     metabolomics,
     missForest,
-    
