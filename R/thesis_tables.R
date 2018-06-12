@@ -1,9 +1,9 @@
 #' Cross validation performance table.
 #'
-#' \code{cv_perform_table()} reproduces the cross validation performance table
+#' \code{table_cv_performance()} reproduces the cross validation performance table
 #' in section x.xx of Benjamin Gordon's PhD thesis.
 #'
-#' \code{cv_perform_table()} loads the saved models in \code{./inst/extdata/};
+#' \code{table_cv_performance()} loads the saved models in \code{./inst/extdata/};
 #' calculates the cross validation confusion matrices and statistics for each
 #' model; creates a table containing the accuracy and the class specific
 #' sensitivity and specificity for each model; saves the table to
@@ -19,7 +19,7 @@
 #' @note The \code{.txt} file extension makes it easy to open the file in a
 #' text editor and copy/paste the contents to Word, where the text can be easily
 #' converted to a table. Although this function is exported,
-#' \code{cv_perform_table()} was not intended to be used outside of this
+#' \code{table_cv_performance()} was not intended to be used outside of this
 #' package.
 #'
 #' @seealso
@@ -32,7 +32,7 @@
 #'
 #' @export
 #'
-cv_perform_table <- function(table.name = "CV_perform_table",
+table_cv_performance <- function(table.name = "CV_perform_table",
                              save.table = FALSE) {
 
   if (!requireNamespace("caret", quietly = TRUE)) {
