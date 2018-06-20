@@ -122,7 +122,7 @@ nmrpls <- function(parallel = TRUE,
   preds <- caret::confusionMatrix(predict(nmrpls, newdata = testing),
                                   testing$class)
 
-  custom_colours <- seq_colours("red")
+  custom_colours <- seq_colours[4] # red
 
   train_plot <- ggplot(nmrpls$results, aes(x = ncomp,
                                            y = Accuracy)) +

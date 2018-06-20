@@ -138,7 +138,7 @@ mzrf <- function(parallel = TRUE,
   preds <- caret::confusionMatrix(predict(mzrf, newdata = test_data),
                                   test_data$class)
 
-  custom_colours <- seq_colours("red")
+  custom_colours <- seq_colours[4] # red
 
   train_plot <- ggplot(mzrf$results, aes(x = mtry,
                                          y = Accuracy)) +

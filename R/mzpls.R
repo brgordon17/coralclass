@@ -130,7 +130,7 @@ mzpls <- function(parallel = TRUE,
 
   preds <- caret::confusionMatrix(predict(mzpls, newdata = test), test$class)
 
-  custom_colours <- seq_colours("red")
+  custom_colours <- seq_colours[4] # red
 
   train_plot <- ggplot(mzpls$results,
                        aes(x = ncomp, y = Accuracy)) +
