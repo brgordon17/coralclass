@@ -55,6 +55,12 @@ if(getRversion() >= "2.15.1") {
                            "ncomp",
                            "nmrdata",
                            "ref",
-                           "save.mzpls"))
+                           "save.mzpls",
+                           "obs",
+                           "obs_day",
+                           "n",
+                           "Day",
+                           "Proportion",
+                           "qual_colours"))
 
 }
