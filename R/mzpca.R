@@ -61,7 +61,7 @@ mzpca <- function(scale = FALSE,
   scores <- data.frame(mzdata[, 2:6], pca$x)
   x_lab <- paste("PC1", " (", round(exp_var[1] * 100, 2), "%)", sep =  "")
   y_lab <- paste("PC2", " (", round(exp_var[2] * 100, 2), "%)", sep =  "")
-  custom_colors <- qual_colours()
+  custom_colors <- qual_colours[c(1:3, 6, 8)]
 
 
   # create plot ----------------------------------------------------------------
@@ -78,10 +78,13 @@ mzpca <- function(scale = FALSE,
                                           height = 0.01 * diff(range(scores$PC2))
                )) +
     labs(x = x_lab, y = y_lab) +
-    scale_shape_manual(values = c(21:25)) +
-    scale_color_manual(values = adjustcolor(custom_colors,
+    scale_shape_manual(name = NULL,
+                       values = c(21:25)) +
+    scale_color_manual(name = NULL,
+                       values = adjustcolor(custom_colors,
                                             alpha.f = 0.9)) +
-    scale_fill_manual(values = adjustcolor(custom_colors,
+    scale_fill_manual(name = NULL,
+                      values = adjustcolor(custom_colors,
                                            alpha.f = 0.5)) +
     theme_brg_grid()
 
