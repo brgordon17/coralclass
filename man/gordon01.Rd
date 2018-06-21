@@ -14,8 +14,24 @@ Island in 2011.
 \section{Functions}{
 
 \itemize{
-\item mzdata_raw
-\item mzdata
+\item create_litmz()
+\item create_mzdata()
+\item create_nmrdata()
+\item figure_pca()
+\item figure_tuning()
+\item mzdata_raw()
+\item mzpca()
+\item mzpls()
+\item mzrf()
+\item nmrpca()
+\item nmrpls()
+\item nmrrf()
+\item plot_base()
+\item qual_colours()
+\item sd_colours()
+\item seq_colours()
+\item table_cv_performance()
+\item theme_brg_grid()
 }
 }
 
