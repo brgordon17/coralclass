@@ -433,7 +433,6 @@ figure_misclass_temporal <- function(view.plot = TRUE,
       top = grid::textGrob("LCMS PLS-DA",
                            x = grid::unit(0.5, "npc"),
                            y = grid::unit(0.5, "npc"),
-                           just = c("centre", "top"),
                            gp = grid::gpar(fontsize = 12)
       ))
 
@@ -443,7 +442,6 @@ figure_misclass_temporal <- function(view.plot = TRUE,
       top = grid::textGrob("NMR PLS-DA",
                            x = grid::unit(0.5, "npc"),
                            y = grid::unit(0.5, "npc"),
-                           just = c("centre", "top"),
                            gp = grid::gpar(fontsize = 12)
       ))
 
@@ -453,7 +451,6 @@ figure_misclass_temporal <- function(view.plot = TRUE,
       top = grid::textGrob("LCMS Random Forests",
                            x = grid::unit(0.5, "npc"),
                            y = grid::unit(0.5, "npc"),
-                           just = c("centre", "top"),
                            gp = grid::gpar(fontsize = 12)
       ))
 
@@ -463,9 +460,24 @@ figure_misclass_temporal <- function(view.plot = TRUE,
       top = grid::textGrob("NMR Random Forests",
                            x = grid::unit(0.5, "npc"),
                            y = grid::unit(0.5, "npc"),
-                           just = c("centre", "top"),
                            gp = grid::gpar(fontsize = 12)
       ))
+
+  # create x- and y-axis text grobs --------------------------------------------
+  xgrob <- grid::textGrob("Days of Exposure",
+                          x = grid::unit(0.5, "npc"),
+                          y = grid::unit(0.5, "npc"),
+                          just = c("centre"),
+                          gp = grid::gpar(fontsize = 12)
+                          )
+
+  ygrob <- grid::textGrob("Proportion of Misclassified Samples",
+                          x = grid::unit(0.5, "npc"),
+                          y = grid::unit(0.5, "npc"),
+                          just = c("centre"),
+                          rot = 90,
+                          gp = grid::gpar(fontsize = 12)
+  )
 
   # Create, view, save plot ----------------------------------------------------
 
@@ -474,7 +486,9 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                             nmrpls_plot_b,
                             mzrf_plot_c,
                             nmrrf_plot_d,
-                            nrow = 2)
+                            nrow = 2,
+                            left = ygrob,
+                            bottom = xgrob)
   }
 
   if (save.plot) {
@@ -486,7 +500,9 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                             nmrpls_plot_b,
                             mzrf_plot_c,
                             nmrrf_plot_d,
-                            nrow = 2)
+                            nrow = 2,
+                            left = ygrob,
+                            bottom = xgrob)
     dev.off()
   }
 
