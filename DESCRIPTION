@@ -17,17 +17,18 @@ Depends:
     R (>= 2.10),
     caret
 Imports:
+    CAMERA,
     devtools,
     doMC,
     dplyr,
     ggplot2,
+    grDevices,
     grid,
     gridExtra,
     magrittr,
-    readr,
-    tibble,
-    xcms
-Suggests:
-    CAMERA,
     metabolomics,
     missForest,
+    readr,
+    stats,
+    tibble,
+    xcms
