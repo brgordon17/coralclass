@@ -55,8 +55,6 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import caret
-#'
 #' @export
 #'
 nmrrf <- function(parallel = TRUE,
@@ -69,12 +67,6 @@ nmrrf <- function(parallel = TRUE,
                   seed = 1978,
                   pred.results = TRUE,
                   ...) {
-
-  if (!requireNamespace("caret", quietly = TRUE)) {
-    stop("Package \"caret\" needed for this function to work. Please install
-         it.",
-         call. = FALSE)
-  }
 
   # Modelling setup ------------------------------------------------------------
   rfdata <- data.frame(nmrdata, check.names = FALSE)
@@ -106,7 +98,7 @@ nmrrf <- function(parallel = TRUE,
                               selectionFunction = "oneSE"
                               )
 
-  ## Create model --------------------------------------------------------------
+  # Create model ---------------------------------------------------------------
   if(parallel) {
     doMC::registerDoMC()
     set.seed(seed)
@@ -134,9 +126,11 @@ nmrrf <- function(parallel = TRUE,
                           )
   }
 
-  preds <- caret::confusionMatrix(predict(nmrrf, newdata = test_data),
+  preds <- caret::confusionMatrix(stats::predict(nmrrf,
+                                                 newdata = test_data),
                                   test_data$class)
 
+  # Plotting -------------------------------------------------------------------
   custom_colours <- seq_colours[4] # red
 
   train_plot <- ggplot(nmrrf$results, aes(x = mtry,
@@ -174,12 +168,12 @@ nmrrf <- function(parallel = TRUE,
   }
 
   if(save.plot) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 8,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 8,
+                   useDingbats = FALSE)
     print(train_plot)
-    dev.off()
+    grDevices::dev.off()
   }
 
   if (save.gg) {

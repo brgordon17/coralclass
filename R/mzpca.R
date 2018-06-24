@@ -36,10 +36,6 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import ggplot2
-#' grDevices
-#' stats
-#'
 #' @export
 #'
 mzpca <- function(scale = FALSE,
@@ -54,7 +50,7 @@ mzpca <- function(scale = FALSE,
 
 
   set.seed(seed)
-  pca <- prcomp(mzdata[-1:-6], scale = scale, center = center)
+  pca <- stats::prcomp(mzdata[-1:-6], scale = scale, center = center)
 
   # Define variables for PCA plot ----------------------------------------------
   exp_var <- summary(pca)$importance[2 ,]
@@ -81,11 +77,11 @@ mzpca <- function(scale = FALSE,
     scale_shape_manual(name = NULL,
                        values = c(21:25)) +
     scale_color_manual(name = NULL,
-                       values = adjustcolor(custom_colors,
-                                            alpha.f = 0.9)) +
+                       values = grDevices::adjustcolor(custom_colors,
+                                                       alpha.f = 0.9)) +
     scale_fill_manual(name = NULL,
-                      values = adjustcolor(custom_colors,
-                                           alpha.f = 0.5)) +
+                      values = grDevices::adjustcolor(custom_colors,
+                                                      alpha.f = 0.5)) +
     theme_brg_grid()
 
   # saves ----------------------------------------------------------------------
@@ -94,21 +90,21 @@ mzpca <- function(scale = FALSE,
   }
 
   if(save.pdf) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 8,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 8,
+                   useDingbats = FALSE)
     print(pcaplot)
-    dev.off()
+    grDevices::dev.off()
   }
   if(save.png) {
     ppi <- 600
-    png(paste(c("./figs/", plot.name, ".png"), collapse = ""),
-        width = 8*ppi,
-        height = 6*ppi,
-        res = ppi)
+    grDevices::png(paste(c("./figs/", plot.name, ".png"), collapse = ""),
+                   width = 8*ppi,
+                   height = 6*ppi,
+                   res = ppi)
     print(pcaplot)
-    dev.off()
+    grDevices::dev.off()
   }
 
   if(view.plot) {

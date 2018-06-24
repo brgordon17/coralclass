@@ -27,8 +27,6 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @importFrom magrittr %>%
-#'
 #' @export
 #'
 create_nmrdata <- function(savecsv = FALSE,

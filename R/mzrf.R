@@ -55,8 +55,6 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import caret
-#'
 #' @export
 #'
 mzrf <- function(parallel = TRUE,
@@ -69,12 +67,6 @@ mzrf <- function(parallel = TRUE,
                  seed = 1978,
                  pred.results = TRUE,
                  ...) {
-
-  if (!requireNamespace("caret", quietly = TRUE)) {
-    stop("Package \"caret\" needed for this function to work. Please install
-         it.",
-         call. = FALSE)
-  }
 
   # Modelling setup -----------------------------------------------------------
   rfdata <- data.frame(mzdata[-which(mzdata$class == "PBQC"), ])
@@ -135,9 +127,11 @@ mzrf <- function(parallel = TRUE,
                          )
   }
 
-  preds <- caret::confusionMatrix(predict(mzrf, newdata = test_data),
+  preds <- caret::confusionMatrix(stats::predict(mzrf,
+                                                 newdata = test_data),
                                   test_data$class)
 
+  # Plotting -------------------------------------------------------------------
   custom_colours <- seq_colours[4] # red
 
   train_plot <- ggplot(mzrf$results, aes(x = mtry,
@@ -175,12 +169,12 @@ mzrf <- function(parallel = TRUE,
   }
 
   if(save.plot) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 8,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 8,
+                   useDingbats = FALSE)
     print(train_plot)
-    dev.off()
+    grDevices::dev.off()
   }
 
   if (save.gg) {

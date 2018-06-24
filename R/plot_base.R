@@ -30,11 +30,13 @@ plot_base <- function() {
                        breaks = breaks,
                        labels = labels,
                        name = NULL) +
-    scale_color_manual(values = adjustcolor(custom_colors, alpha.f = 0.9),
+    scale_color_manual(values = grDevices::adjustcolor(custom_colors,
+                                                       alpha.f = 0.9),
                        breaks = breaks,
                        labels = labels,
                        name = NULL) +
-    scale_fill_manual(values = adjustcolor(custom_colors, alpha.f = 0.5),
+    scale_fill_manual(values = grDevices::adjustcolor(custom_colors,
+                                                      alpha.f = 0.5),
                       breaks = breaks,
                       labels = labels,
                       name = NULL) +

@@ -16,24 +16,21 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @importFrom magrittr %>%
-#'
 #' @export
 #'
 # Load literature variables and clean up ---------------------------------------
-create_litmz <- function(save.rda = TRUE) {
+create_litmz <- function(save.rda = FALSE) {
 
   litmz <- readr::read_csv("./data-raw/metabs_literature.csv", col_names = TRUE)
   litmz <- litmz %>%
-    dplyr::select(-`Endnote Reference`) %>%
-    dplyr::rename(reported_mz = `Reported m/z`,
-                  reported_ion = `Reported ion`,
-                  moniso_mass = `Monoisotopic Mass (Da)`,
-                  molec_formula = `Molecular Formula`,
-                  reported_name = `Reported compound name`,
-                  taxon = `Genus`,
-                  ref = `ref`
-                  )
+    select(-`Endnote Reference`) %>%
+    rename(reported_mz = `Reported m/z`,
+           reported_ion = `Reported ion`,
+           monoiso_mass = `Monoisotopic Mass (Da)`,
+           molec_formula = `Molecular Formula`,
+           reported_name = `Reported compound name`,
+           taxon = `Genus`,
+           ref = `ref`)
 
   if(save.rda) {
     devtools::use_data(litmz)

@@ -33,16 +33,6 @@ mzdata_raw <- function(saveoutput = FALSE,
                        outputname = "example-mzdata-raw",
                        ...) {
 
-  if (!requireNamespace("xcms", quietly = TRUE)) {
-    stop("Package \"xcms\" needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-
-  if (!requireNamespace("CAMERA", quietly = TRUE)) {
-    stop("Package \"CAMERA\" needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-
   files <- list.files(path = "./data-raw/example_mzxml_data",
                       full.names = TRUE,
                       recursive = TRUE)

@@ -52,8 +52,6 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import caret
-#'
 #' @export
 #'
 mzpls <- function(parallel = TRUE,
@@ -66,12 +64,6 @@ mzpls <- function(parallel = TRUE,
                   seed = 1978,
                   pred.results = TRUE,
                   ...) {
-
-  if (!requireNamespace("caret", quietly = TRUE)) {
-    stop("Package \"caret\" needed for this function to work. Please install
-         it.",
-         call. = FALSE)
-  }
 
   # Modelling setup -----------------------------------------------------------
   plsdata <- data.frame(mzdata[-which(mzdata$class == "PBQC"), ])
@@ -99,8 +91,7 @@ mzpls <- function(parallel = TRUE,
                               summaryFunction = defaultSummary,
                               seeds = seeds,
                               savePredictions = "all",
-                              selectionFunction = "oneSE"
-                              )
+                              selectionFunction = "oneSE")
 
   ## Create model --------------------------------------------------------------
   if(parallel) {
@@ -112,8 +103,7 @@ mzpls <- function(parallel = TRUE,
                           tuneLength = 50,
                           trControl = ctrl,
                           preProc = c("center", "scale"),
-                          allowParallel = TRUE
-                          )
+                          allowParallel = TRUE)
   }
 
   else {
@@ -124,11 +114,14 @@ mzpls <- function(parallel = TRUE,
                           tuneLength = 50,
                           trControl = ctrl,
                           preProc = c("center", "scale"),
-                          allowParallel = FALSE
-                          )
+                          allowParallel = FALSE)
   }
 
-  preds <- caret::confusionMatrix(predict(mzpls, newdata = test), test$class)
+  preds <- caret::confusionMatrix(stats::predict(mzpls,
+                                                 newdata = test),
+                                  test$class)
+
+  # Plotting -------------------------------------------------------------------
 
   custom_colours <- seq_colours[4] # red
 
@@ -167,12 +160,12 @@ mzpls <- function(parallel = TRUE,
   }
 
   if(save.plot) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 8,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 8,
+                   useDingbats = FALSE)
     print(train_plot)
-    dev.off()
+    grDevices::dev.off()
   }
 
   if(save.mzpls) {

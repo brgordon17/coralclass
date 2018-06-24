@@ -52,8 +52,6 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import caret
-#'
 #' @export
 #'
 nmrpls <- function(parallel = TRUE,
@@ -67,13 +65,7 @@ nmrpls <- function(parallel = TRUE,
                    pred.results = TRUE,
                    ...) {
 
-  if (!requireNamespace("caret", quietly = TRUE)) {
-    stop("Package \"caret\" needed for this function to work. Please install
-         it.",
-         call. = FALSE)
-  }
-
-  ## Modelling setup -----------------------------------------------------------
+  # Modelling setup ------------------------------------------------------------
   set.seed(seed)
   index <- caret::createDataPartition(nmrdata$class_day,
                                       p = .8,
@@ -95,7 +87,7 @@ nmrpls <- function(parallel = TRUE,
                               savePredictions = "all",
                               selectionFunction = "oneSE")
 
-  ## Create model --------------------------------------------------------------
+  # Create model ---------------------------------------------------------------
   if(parallel) {
     doMC::registerDoMC()
     set.seed(seed)
@@ -119,9 +111,11 @@ nmrpls <- function(parallel = TRUE,
                            allowParallel = FALSE)
   }
 
-  preds <- caret::confusionMatrix(predict(nmrpls, newdata = testing),
+  preds <- caret::confusionMatrix(stats::predict(nmrpls,
+                                                 newdata = testing),
                                   testing$class)
 
+  # Plotting -------------------------------------------------------------------
   custom_colours <- seq_colours[4] # red
 
   train_plot <- ggplot(nmrpls$results, aes(x = ncomp,
@@ -159,12 +153,12 @@ nmrpls <- function(parallel = TRUE,
   }
 
   if(save.plot) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 8,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 8,
+                   useDingbats = FALSE)
     print(train_plot)
-    dev.off()
+    grDevices::dev.off()
   }
 
   if (save.gg) {

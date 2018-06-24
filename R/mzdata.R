@@ -49,8 +49,6 @@
 #' \code{\link[doMC]{registerDoMC}}
 #' \code{\link[missForest]{missForest}}
 #'
-#' @import utils
-#'
 #' @export
 #'
 create_mzdata <- function(parallel = FALSE,
@@ -58,18 +56,6 @@ create_mzdata <- function(parallel = FALSE,
                           savecsv = FALSE,
                           saverda = TRUE,
                           csvname = "mzdata") {
-
-  if (!requireNamespace("metabolomics", quietly = TRUE)) {
-    stop("Package \"metabolomics\" needed for this function to work. Please
-         install it.",
-         call. = FALSE)
-  }
-
-  if (!requireNamespace("missForest", quietly = TRUE)) {
-    stop("Package \"missForest\" needed for this function to work. Please
-         install it.",
-         call. = FALSE)
-  }
 
   mzdata  <-  readr::read_csv("./data-raw/mzdata-raw.csv", na = "0")
 

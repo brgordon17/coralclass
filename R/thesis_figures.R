@@ -23,10 +23,7 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import ggplot2
-#'
 #' @export
-#'
 #'
 figure_pca <- function(view.plot = TRUE,
                        save.plot = FALSE,
@@ -79,17 +76,17 @@ figure_pca <- function(view.plot = TRUE,
   }
 
   if (save.plot) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 5,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 5,
+                   useDingbats = FALSE)
     gridExtra::grid.arrange(gridExtra::arrangeGrob(pca_plot_a,
                                                    pca_plot_b,
                                                    nrow = 1),
                             legend,
                             nrow = 2,
                             heights = c(12, 1))
-    dev.off()
+    grDevices::dev.off()
   }
 
 }
@@ -118,8 +115,6 @@ figure_pca <- function(view.plot = TRUE,
 #' \code{\link[grid]{grid-package}}
 #'
 #' @author Benjamin R. Gordon
-#'
-#' @import ggplot2
 #'
 #' @export
 #'
@@ -185,16 +180,16 @@ figure_tuning <- function(view.plot = TRUE,
   }
 
   if (save.plot) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 8,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 8,
+                   useDingbats = FALSE)
     gridExtra::grid.arrange(mzpls_plot_a,
                             nmrpls_plot_b,
                             mzrf_plot_c,
                             nmrrf_plot_d,
                             nrow = 2)
-    dev.off()
+    grDevices::dev.off()
   }
 
 }
@@ -227,10 +222,6 @@ figure_tuning <- function(view.plot = TRUE,
 #' \code{\link[grid]{grid-package}}
 #'
 #' @author Benjamin R. Gordon
-#'
-#' @importFrom dplyr %>%
-#'
-#' @import ggplot2
 #'
 #' @export
 #'
@@ -294,12 +285,12 @@ figure_misclass_temporal <- function(view.plot = TRUE,
 
   # Summarise the proportion of all misclassification according to day ---------
   mzpls_prop <-
-    dplyr::group_by(mzpls_false_preds,
-                    obs,
-                    obs_day) %>%
-    dplyr::summarize(n = length(obs)) %>%
-    dplyr::mutate(Proportion = round(n / sum(n), 2)) %>%
-    dplyr::ungroup()
+    group_by(mzpls_false_preds,
+             obs,
+             obs_day) %>%
+    summarize(n = length(obs)) %>%
+    mutate(Proportion = round(n / sum(n), 2)) %>%
+    ungroup()
   colnames(mzpls_prop)[1] <- "Observation"
   colnames(mzpls_prop)[2] <- "Day"
   mzpls_prop$Observation2 <- # factor with plotmath labels for subscripts
@@ -310,12 +301,12 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                       "eCO[2]*eT"))
 
   mzrf_prop <-
-    dplyr::group_by(mzrf_false_preds,
-                    obs,
-                    obs_day) %>%
-    dplyr::summarize(n = length(obs)) %>%
-    dplyr::mutate(Proportion = round(n / sum(n), 2)) %>%
-    dplyr::ungroup()
+    group_by(mzrf_false_preds,
+             obs,
+             obs_day) %>%
+    summarize(n = length(obs)) %>%
+    mutate(Proportion = round(n / sum(n), 2)) %>%
+    ungroup()
   colnames(mzrf_prop)[1] <- "Observation"
   colnames(mzrf_prop)[2] <- "Day"
   mzrf_prop$Observation2 <- # factor with plotmath labels for subscripts
@@ -326,12 +317,12 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                       "eCO[2]*eT"))
 
   nmrpls_prop <-
-    dplyr::group_by(nmrpls_false_preds,
-                    obs,
-                    obs_day) %>%
-    dplyr::summarize(n = length(obs)) %>%
-    dplyr::mutate(Proportion = round(n / sum(n), 2)) %>%
-    dplyr::ungroup()
+    group_by(nmrpls_false_preds,
+             obs,
+             obs_day) %>%
+    summarize(n = length(obs)) %>%
+    mutate(Proportion = round(n / sum(n), 2)) %>%
+    ungroup()
   colnames(nmrpls_prop)[1] <- "Observation"
   colnames(nmrpls_prop)[2] <- "Day"
   nmrpls_prop$Observation2 <- # factor with plotmath labels for subscripts
@@ -342,12 +333,12 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                       "eCO[2]*eT"))
 
   nmrrf_prop <-
-    dplyr::group_by(nmrrf_false_preds,
-                    obs,
-                    obs_day) %>%
-    dplyr::summarize(n = length(obs)) %>%
-    dplyr::mutate(Proportion = round(n / sum(n), 2)) %>%
-    dplyr::ungroup()
+    group_by(nmrrf_false_preds,
+             obs,
+             obs_day) %>%
+    summarize(n = length(obs)) %>%
+    mutate(Proportion = round(n / sum(n), 2)) %>%
+    ungroup()
   colnames(nmrrf_prop)[1] <- "Observation"
   colnames(nmrrf_prop)[2] <- "Day"
   nmrrf_prop$Observation2 <- # factor with plotmath labels for subscripts
@@ -358,8 +349,8 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                       "eCO[2]*eT"))
 
   # Create side-by-side bar plots -----------------------------------------------
-  mzpls_plot <- ggplot2::ggplot(mzpls_prop,
-                                aes(x = Day, y = Proportion, fill = Day)) +
+  mzpls_plot <- ggplot(mzpls_prop,
+                       aes(x = Day, y = Proportion, fill = Day)) +
     geom_col() +
     facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
     scale_fill_manual(values = qual_colours[c(1:3, 7)], guide = "none") +
@@ -375,8 +366,8 @@ figure_misclass_temporal <- function(view.plot = TRUE,
           axis.ticks = element_blank()
           )
 
-  mzrf_plot <- ggplot2::ggplot(mzrf_prop,
-                               aes(x = Day, y = Proportion, fill = Day)) +
+  mzrf_plot <- ggplot(mzrf_prop,
+                      aes(x = Day, y = Proportion, fill = Day)) +
     geom_col() +
     facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
     scale_fill_manual(values = qual_colours[c(1:3, 7)], guide = "none") +
@@ -392,8 +383,8 @@ figure_misclass_temporal <- function(view.plot = TRUE,
           axis.ticks = element_blank()
     )
 
-  nmrpls_plot <- ggplot2::ggplot(nmrpls_prop,
-                                 aes(x = Day, y = Proportion, fill = Day)) +
+  nmrpls_plot <- ggplot(nmrpls_prop,
+                        aes(x = Day, y = Proportion, fill = Day)) +
     geom_col() +
     facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
     scale_fill_manual(values = qual_colours[c(1:3, 7)], guide = "none") +
@@ -409,8 +400,8 @@ figure_misclass_temporal <- function(view.plot = TRUE,
           axis.ticks = element_blank()
     )
 
-  nmrrf_plot <- ggplot2::ggplot(nmrrf_prop,
-                                aes(x = Day, y = Proportion, fill = Day)) +
+  nmrrf_plot <- ggplot(nmrrf_prop,
+                       aes(x = Day, y = Proportion, fill = Day)) +
     geom_col() +
     facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
     scale_fill_manual(values = qual_colours[c(1:3, 7)], guide = "none") +
@@ -492,10 +483,10 @@ figure_misclass_temporal <- function(view.plot = TRUE,
   }
 
   if (save.plot) {
-    pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
-        width = 10,
-        height = 8,
-        useDingbats = FALSE)
+    grDevices::pdf(paste(c("./figs/", plot.name, ".pdf"), collapse = ""),
+                   width = 10,
+                   height = 8,
+                   useDingbats = FALSE)
     gridExtra::grid.arrange(mzpls_plot_a,
                             nmrpls_plot_b,
                             mzrf_plot_c,
@@ -503,7 +494,7 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                             nrow = 2,
                             left = ygrob,
                             bottom = xgrob)
-    dev.off()
+    grDevices::dev.off()
   }
 
 }
