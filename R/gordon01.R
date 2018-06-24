@@ -31,6 +31,9 @@
 #'
 #' @docType package
 #' @name gordon01
+#' @import caret
+#' @import ggplot2
+#' @import dplyr
 NULL
 
 # Quiets R CMD CHECK notes where there is no visible binding for some global
@@ -61,6 +64,19 @@ if(getRversion() >= "2.15.1") {
                            "n",
                            "Day",
                            "Proportion",
-                           "qual_colours"))
+                           "qual_colours",
+                           "mz",
+                           "control",
+                           "eT",
+                           "eCO2",
+                           "eCO2eT",
+                           "importance",
+                           "mz_neutral",
+                           "model",
+                           "mz_low",
+                           "mz_high",
+                           "monoiso_mass",
+                           "litmz",
+                           "dummy"))
 
 }
