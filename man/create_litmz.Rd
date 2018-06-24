@@ -4,7 +4,7 @@
 \alias{create_litmz}
 \title{create litmz.}
 \usage{
-create_litmz(save.rda = TRUE)
+create_litmz(save.rda = FALSE)
 }
 \arguments{
 \item{save.rda}{Logical indicating if a .rda file should be saved to
