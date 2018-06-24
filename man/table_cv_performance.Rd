@@ -16,15 +16,15 @@ table_cv_performance(table.name = "CV_perform_table", save.table = FALSE)
 returns a tibble with class \code{tbl_df}.
 }
 \description{
-\code{table_cv_performance()} reproduces the cross validation performance table
-in section x.xx of Benjamin Gordon's PhD thesis.
+\code{table_cv_performance()} reproduces the cross validation performance
+table in section x.xx of Benjamin Gordon's PhD thesis.
 }
 \details{
-\code{table_cv_performance()} loads the saved models in \code{./inst/extdata/};
-calculates the cross validation confusion matrices and statistics for each
-model; creates a table containing the accuracy and the class specific
-sensitivity and specificity for each model; saves the table to
-\code{./tables/} as a \code{.csv} file with a \code{.txt} file
+\code{table_cv_performance()} loads the saved models in
+\code{./inst/extdata/}; calculates the cross validation confusion matrices
+and statistics for each model; creates a table containing the accuracy and
+the class specific sensitivity and specificity for each model; saves the
+table to \code{./tables/} as a \code{.csv} file with a \code{.txt} file
 extension.
 }
 \note{
