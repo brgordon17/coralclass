@@ -28,19 +28,10 @@
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import caret
-#'
 #' @export
 #'
 table_cv_performance <- function(table.name = "CV_perform_table",
                                  save.table = FALSE) {
-
-  if (!requireNamespace("caret", quietly = TRUE)) {
-    stop("Package \"caret\" needed for this function to work. Please install
-         it.",
-         call. = FALSE)
-  }
-
   # load models ----------------------------------------------------------------
   mzpls_mod <- readRDS("./inst/extdata/mzpls_model.rds")
   mzrf_mod <- readRDS("./inst/extdata/mzrf_model.rds")
@@ -134,18 +125,10 @@ table_cv_performance <- function(table.name = "CV_perform_table",
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import caret
-#'
 #' @export
 #'
 table_model_test <- function(table.name = "model_testing_table",
                                  save.table = FALSE) {
-
-  if (!requireNamespace("caret", quietly = TRUE)) {
-    stop("Package \"caret\" needed for this function to work. Please install
-         it.",
-         call. = FALSE)
-  }
 
   # Load models ----------------------------------------------------------------
   mzpls_mod <- readRDS("./inst/extdata/mzpls_model.rds")
@@ -158,16 +141,15 @@ table_model_test <- function(table.name = "model_testing_table",
   lcmsdata <- droplevels(lcmsdata)
 
   set.seed(1978)
-  mzindex <- caret::createDataPartition(lcmsdata$class_day,
-                                        p = .8,
-                                        list = FALSE,
-                                        times = 1
-  )
+  mzindex <- createDataPartition(lcmsdata$class_day,
+                                 p = .8,
+                                 list = FALSE,
+                                 times = 1)
   set.seed(1978)
-  nmrindex <- caret::createDataPartition(nmrdata$class_day,
-                                         p = .8,
-                                         list = FALSE,
-                                         times = 1)
+  nmrindex <- createDataPartition(nmrdata$class_day,
+                                  p = .8,
+                                  list = FALSE,
+                                  times = 1)
 
   mztest  <- lcmsdata[-mzindex, ]
   nmrtest  <- data.frame(nmrdata[-nmrindex, ], check.names = FALSE)
@@ -236,8 +218,6 @@ table_model_test <- function(table.name = "model_testing_table",
 #'
 #' @author Benjamin R. Gordon
 #'
-#' @import caret
-#'
 #' @export
 #'
 table_cv_conmat <- function() {
@@ -267,5 +247,135 @@ table_cv_conmat <- function() {
                   nmrrf = nmrrf_conmat)
 
   conmats
+
+}
+
+#' Cross reference LCMS features
+#'
+#' \code{crossref_mzfeatures()} compares the 20 most important variables
+#' identified in the PLS-DA and Random Forests models with those in
+#' \code{\link{litmz}}.
+#'
+#' \code{crossref_mzfeatures()} Loads the LCMS, PLS-DA and RF models and
+#' creates a table of the 20 most important variables according to
+#' \code{\link[caret]{varImp}}; three variables are calculated and bound to
+#' this table:
+#' \describe{
+#' \item{$mz_neutral}{The neutral mass of the ion calculated by subtracting the
+#' monoisotopic mass of the hydrogen ion (1.007276 Da)}
+#' \item{$mz_low}{Equal to mz_neutral - the user defined ppm error}
+#' \item{$mz_high}{Equal to mz_neutral + the user defined ppm error}
+#' }
+#' This table can be optionally saved to \code{./inst/extdata/} as a \code{.rds}
+#' file. Finally, the important variables for each model are cross referenced
+#' against a table of ions identified in the literature
+#' (see \code{\link{litmz}}). Matches within the specified ppm error range are
+#' retrieved and can be optionally saved to \code{./tables/} as a comma
+#' separated \code{.txt} file.
+#'
+#' @param ppm Numeric mass error to use for cross referencing
+#' @param save.impvars Logical indicating if the table of the 20 most important
+#' variables for each model should be saved to \code{./inst/extdata/}
+#' @param save.matches Logical indication if the table of cross referencing
+#' matches should be save to \code{./tables/}
+#'
+#' @return Returns a list containing the important and matched variables
+#'
+#' @note Although this function is exported, \code{table_cv_conmat()} was not
+#' intended to be used outside of this package.
+#'
+#' @seealso
+#' \code{\link[caret]{varImp}}
+#' \code{\link{litmz}}
+#'
+#' @author Benjamin R. Gordon
+#'
+#' @export
+#'
+crossref_mzfeatures <- function(ppm = 50,
+                                save.impvars = FALSE,
+                                save.matches = FALSE) {
+
+  # retrieve important variables -----------------------------------------------
+  mzpls_mod <- readRDS("./inst/extdata/mzpls_model.rds")
+  mzrf_mod <- readRDS("./inst/extdata/mzrf_model.rds")
+
+  mzpls_impvars <- caret::varImp(mzpls_mod, scale = TRUE)
+  mzpls_impvars <- tibble::as_tibble(mzpls_impvars$importance)
+  mzpls_impvars <-
+    mzpls_impvars %>%
+    mutate(mz = gsub("mz_", "", rownames(mzpls_impvars))) %>%
+    rowwise() %>%
+    transmute(
+      mz = as.numeric(mz),# warnings arise from features with two decimal points
+      importance = max(control, eT, eCO2, eCO2eT)) %>%
+    arrange(desc(importance)) %>%
+    slice(1:20)
+
+  mzrf_impvars <- caret::varImp(mzrf_mod, scale = TRUE)
+  mzrf_impvars <- tibble::as_tibble(mzrf_impvars$importance)
+  mzrf_impvars <-
+    mzrf_impvars %>%
+    mutate(mz = gsub("mz_", "", rownames(mzrf_impvars))) %>%
+    rowwise() %>%
+    transmute(
+      mz = as.numeric(mz),# warnings arise from features with two decimal points
+      importance = max(control, eT, eCO2, eCO2eT)) %>%
+    arrange(desc(importance)) %>%
+    slice(1:20)
+
+  # Add variables for ppm error ranges -----------------------------------------
+  mzpls_impvars <-
+    mzpls_impvars %>%
+    rowwise() %>%
+    mutate(
+      model = "pls",
+      mz_neutral = mz - 1.007276,
+      mz_low = mz_neutral - (mz * ppm/10^6),
+      mz_high = mz_neutral + (mz * ppm/10^6)) %>%
+    select(model, everything()) %>%
+    ungroup()
+
+  mzrf_impvars <-
+    mzrf_impvars %>%
+    rowwise() %>%
+    mutate(
+      model = "rf",
+      mz_neutral = mz - 1.007276,
+      mz_low = mz_neutral - (mz * ppm/10^6),
+      mz_high = mz_neutral + (mz * ppm/10^6)) %>%
+    select(model, everything()) %>%
+    ungroup()
+
+  pls_rf_impvars <-
+    bind_rows(mzpls_impvars, mzrf_impvars)
+
+  # Cross reference with litmz -------------------------------------------------
+  pls_rf_matches <-
+    pls_rf_impvars %>%
+    mutate(dummy = TRUE) %>%
+    left_join(litmz %>% mutate(dummy = TRUE))  %>%
+    filter(monoiso_mass <= mz_high, monoiso_mass >= mz_low) %>%
+    select(-dummy,
+           -mz_neutral,
+           -mz_low,
+           -mz_high)
+
+  # Output and saves -----------------------------------------------------------
+  if (save.impvars) {
+    saveRDS(pls_rf_impvars, "./inst/extdata/pls_rf_impvars.rds")
+  }
+
+  if (save.matches) {
+    readr::write_csv(pls_rf_matches, "./tables/important_variable_matches.txt")
+  }
+
+  impvars_matches <- list(imp_vars = pls_rf_impvars,
+                          lit_matches = pls_rf_matches)
+
+  impvars_matches
+
+  message("duplicate mz values have .1 appended to the value and may produce
+          some warnings")
 
 }
