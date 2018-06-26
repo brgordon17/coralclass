@@ -253,14 +253,16 @@ table_cv_conmat <- function() {
 
 #' Cross reference LCMS features
 #'
-#' \code{crossref_mzfeatures()} compares the 20 most important variables
-#' identified in the PLS-DA and Random Forests models with those in
-#' \code{\link{litmz}}.
+#' \code{table_crossref()} compares the 20 most important variables
+#' identified in the PLS-DA and Random Forests modelling of the LCMS data with
+#' the monoisotopic mass of those in \code{\link{litmz}}.
 #'
-#' \code{crossref_mzfeatures()} Loads the LCMS, PLS-DA and RF models and
-#' creates a table of the 20 most important variables according to
-#' \code{\link[caret]{varImp}}; three variables are calculated and bound to
-#' this table:
+#' \code{table_crossref()} Loads the LCMS PLS-DA and LCMS RF models and
+#' creates a table (\code{list$imp_vars}) of the 20 most important variables
+#' according to \code{\link[caret]{varImp}}. The cross referencing is performed
+#' by determining which ions identified in the literature are within the user
+#' defined mass error. Three variables are created to define the upper and
+#' lower bounds of the mass error:
 #' \describe{
 #' \item{$mz_neutral}{The neutral mass of the ion calculated by subtracting the
 #' monoisotopic mass of the hydrogen ion (1.007276 Da)}
@@ -282,7 +284,7 @@ table_cv_conmat <- function() {
 #'
 #' @return Returns a list containing the important and matched variables
 #'
-#' @note Although this function is exported, \code{table_cv_conmat()} was not
+#' @note Although this function is exported, \code{table_crossref()} was not
 #' intended to be used outside of this package.
 #'
 #' @seealso
@@ -293,9 +295,9 @@ table_cv_conmat <- function() {
 #'
 #' @export
 #'
-crossref_mzfeatures <- function(ppm = 50,
-                                save.impvars = FALSE,
-                                save.matches = FALSE) {
+table_crossref <- function(ppm = 50,
+                           save.impvars = FALSE,
+                           save.matches = FALSE) {
 
   # retrieve important variables -----------------------------------------------
   mzpls_mod <- readRDS("./inst/extdata/mzpls_model.rds")
@@ -374,9 +376,9 @@ crossref_mzfeatures <- function(ppm = 50,
   impvars_matches <- list(imp_vars = pls_rf_impvars,
                           lit_matches = pls_rf_matches)
 
-  impvars_matches
-
   message("duplicate mz values have .1 appended to the value and may produce
           some warnings")
+
+  impvars_matches
 
 }
