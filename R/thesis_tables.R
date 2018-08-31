@@ -259,9 +259,8 @@ table_cv_conmat <- function() {
 #'
 #' \code{table_crossref()} Loads the LCMS PLS-DA and LCMS RF models and
 #' creates a table (\code{list$imp_vars}) of the 20 most important variables
-#' according to \code{\link[caret]{varImp}}. The cross referencing is performed
-#' by determining which ions identified in the literature are within the user
-#' defined mass error. Three variables are created to define the upper and
+#' according to \code{\link[caret]{varImp}}. The cross referencing relies on the
+#' user defined mass error. Three variables are created to define the upper and
 #' lower bounds of the mass error:
 #' \describe{
 #' \item{$mz_neutral}{The neutral mass of the ion calculated by subtracting the
@@ -269,14 +268,17 @@ table_cv_conmat <- function() {
 #' \item{$mz_low}{Equal to mz_neutral - the user defined ppm error}
 #' \item{$mz_high}{Equal to mz_neutral + the user defined ppm error}
 #' }
-#' This table can be optionally saved to \code{./inst/extdata/} as a \code{.rds}
-#' file. Finally, the important variables for each model are cross referenced
-#' against a table of ions identified in the literature
-#' (see \code{\link{litmz}}). Matches within the specified ppm error range are
-#' retrieved and can be optionally saved to \code{./tables/} as a comma
-#' separated \code{.txt} file.
+#' The table of the 20 most important variables and their mass error can be
+#' optionally saved to \code{./inst/extdata/} as a \code{.rds}
+#' file. Matches with compounds in \code{litmz}, if any, are retrieved and can
+#' be optionally saved to \code{./tables/} as a comma separated \code{.txt}
+#' file.
 #'
 #' @param ppm Numeric mass error to use for cross referencing
+#' @param ref.type The format of the references column in the matched variables
+#' table. Can be one of either "generic" or "endnote". Defaults to
+#' \code{"generic"} as the endnote format, and its associated record number, is
+#' relevant only to the author.
 #' @param save.impvars Logical indicating if the table of the 20 most important
 #' variables for each model should be saved to \code{./inst/extdata/}
 #' @param save.matches Logical indication if the table of cross referencing
@@ -284,8 +286,10 @@ table_cv_conmat <- function() {
 #'
 #' @return Returns a list containing the important and matched variables
 #'
-#' @note Although this function is exported, \code{table_crossref()} was not
-#' intended to be used outside of this package.
+#' @note Commas in the references variable are replaced with semi colons to
+#' avoid conflicts with downstream use of the \code{.csv} file. Although this
+#' function is exported, \code{table_crossref()} was not intended to be used
+#' outside of this package.
 #'
 #' @seealso
 #' \code{\link[caret]{varImp}}
@@ -296,8 +300,11 @@ table_cv_conmat <- function() {
 #' @export
 #'
 table_crossref <- function(ppm = 50,
+                           ref.type = c("generic", "endnote"),
                            save.impvars = FALSE,
                            save.matches = FALSE) {
+
+  ref.type <- match.arg(ref.type)
 
   # retrieve important variables -----------------------------------------------
   mzpls_mod <- readRDS("./inst/extdata/mzpls_model.rds")
@@ -363,6 +370,21 @@ table_crossref <- function(ppm = 50,
            -mz_neutral,
            -mz_low,
            -mz_high)
+
+  # References -----------------------------------------------------------------
+  if (ref.type == "generic") {
+    pls_rf_matches <-
+      pls_rf_matches %>%
+      mutate(ref = stringr::str_replace(endnote_ref, ",", ";")) %>%
+      select(-endnote_ref)
+  }
+
+  else if (ref.type == "endnote") {
+    pls_rf_matches <-
+      pls_rf_matches %>%
+      mutate(endnote_ref = stringr::str_replace(endnote_ref, ",", ";")) %>%
+      select(-ref)
+  }
 
   # Output and saves -----------------------------------------------------------
   if (save.impvars) {
