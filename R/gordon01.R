@@ -78,6 +78,7 @@ if(getRversion() >= "2.15.1") {
                            "monoiso_mass",
                            "litmz",
                            "dummy",
-                           "endnote_ref"))
+                           "endnote_ref,
+                           vip"))
 
 }
