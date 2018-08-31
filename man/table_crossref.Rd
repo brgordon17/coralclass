@@ -4,10 +4,16 @@
 \alias{table_crossref}
 \title{Cross reference LCMS features}
 \usage{
-table_crossref(ppm = 50, save.impvars = FALSE, save.matches = FALSE)
+table_crossref(ppm = 50, ref.type = c("generic", "endnote"),
+  save.impvars = FALSE, save.matches = FALSE)
 }
 \arguments{
 \item{ppm}{Numeric mass error to use for cross referencing}
+
+\item{ref.type}{The format of the references column in the matched variables
+table. Can be one of either "generic" or "endnote". Defaults to
+\code{"generic"} as the endnote format, and its associated record number, is
+relevant only to the author.}
 
 \item{save.impvars}{Logical indicating if the table of the 20 most important
 variables for each model should be saved to \code{./inst/extdata/}}
@@ -26,9 +32,8 @@ the monoisotopic mass of those in \code{\link{litmz}}.
 \details{
 \code{table_crossref()} Loads the LCMS PLS-DA and LCMS RF models and
 creates a table (\code{list$imp_vars}) of the 20 most important variables
-according to \code{\link[caret]{varImp}}. The cross referencing is performed
-by determining which ions identified in the literature are within the user
-defined mass error. Three variables are created to define the upper and
+according to \code{\link[caret]{varImp}}. The cross referencing relies on the
+user defined mass error. Three variables are created to define the upper and
 lower bounds of the mass error:
 \describe{
 \item{$mz_neutral}{The neutral mass of the ion calculated by subtracting the
@@ -36,16 +41,17 @@ monoisotopic mass of the hydrogen ion (1.007276 Da)}
 \item{$mz_low}{Equal to mz_neutral - the user defined ppm error}
 \item{$mz_high}{Equal to mz_neutral + the user defined ppm error}
 }
-This table can be optionally saved to \code{./inst/extdata/} as a \code{.rds}
-file. Finally, the important variables for each model are cross referenced
-against a table of ions identified in the literature
-(see \code{\link{litmz}}). Matches within the specified ppm error range are
-retrieved and can be optionally saved to \code{./tables/} as a comma
-separated \code{.txt} file.
+The table of the 20 most important variables and their mass error can be
+optionally saved to \code{./inst/extdata/} as a \code{.rds}
+file. Matches with compounds in \code{litmz}, if any, are retrieved and can
+be optionally saved to \code{./tables/} as a comma separated \code{.txt}
+file.
 }
 \note{
-Although this function is exported, \code{table_crossref()} was not
-intended to be used outside of this package.
+Commas in the references variable are replaced with semi colons to
+avoid conflicts with downstream use of the \code{.csv} file. Although this
+function is exported, \code{table_crossref()} was not intended to be used
+outside of this package.
 }
 \seealso{
 \code{\link[caret]{varImp}}

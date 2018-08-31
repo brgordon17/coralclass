@@ -4,11 +4,13 @@
 \alias{create_litmz}
 \title{create litmz.}
 \usage{
-create_litmz(save.rda = FALSE)
+create_litmz(save.rda = FALSE, overwrite = FALSE)
 }
 \arguments{
 \item{save.rda}{Logical indicating if a .rda file should be saved to
-\code{/data}}
+\code{/data}.}
+
+\item{overwrite}{Logical indicating if existing files should be overwritten.}
 }
 \value{
 Returns a dataframe of class \code{tbl_df}
@@ -18,8 +20,8 @@ Returns a dataframe of class \code{tbl_df}
 future analysis
 }
 \details{
-\code{create_litmz()} cleans up the headers and removes Endnote referencing
-in \code{metabs_literature.csv}.
+\code{create_litmz()} loads \code{metabs_literature.csv}, cleans up the
+headers and creates \code{litmz.rda}.
 }
 \note{
 \code{create_litmz()} was not intended to be used outside of this
