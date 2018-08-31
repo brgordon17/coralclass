@@ -77,6 +77,7 @@ if(getRversion() >= "2.15.1") {
                            "mz_high",
                            "monoiso_mass",
                            "litmz",
-                           "dummy"))
+                           "dummy",
+                           "endnote_ref"))
 
 }
