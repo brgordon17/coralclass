@@ -3,11 +3,12 @@
 #' \code{create_litmz()} cleans \code{./data-raw/metabs_literature.csv} for
 #' future analysis
 #'
-#' \code{create_litmz()} cleans up the headers and removes Endnote referencing
-#' in \code{metabs_literature.csv}.
+#' \code{create_litmz()} loads \code{metabs_literature.csv}, cleans up the
+#' headers and creates \code{litmz.rda}.
 #'
 #' @param save.rda Logical indicating if a .rda file should be saved to
-#' \code{/data}
+#' \code{/data}.
+#' @param overwrite Logical indicating if existing files should be overwritten.
 #'
 #' @return Returns a dataframe of class \code{tbl_df}
 #'
@@ -19,21 +20,22 @@
 #' @export
 #'
 # Load literature variables and clean up ---------------------------------------
-create_litmz <- function(save.rda = FALSE) {
+create_litmz <- function(save.rda = FALSE,
+                         overwrite = FALSE) {
 
   litmz <- readr::read_csv("./data-raw/metabs_literature.csv", col_names = TRUE)
   litmz <- litmz %>%
-    select(-`Endnote Reference`) %>%
     rename(reported_mz = `Reported m/z`,
            reported_ion = `Reported ion`,
            monoiso_mass = `Monoisotopic Mass (Da)`,
            molec_formula = `Molecular Formula`,
            reported_name = `Reported compound name`,
            taxon = `Genus`,
+           endnote_ref = `Endnote Reference`,
            ref = `ref`)
 
   if(save.rda) {
-    devtools::use_data(litmz)
+    devtools::use_data(litmz, overwrite = overwrite)
   }
 
   litmz
