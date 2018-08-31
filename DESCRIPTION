@@ -30,5 +30,6 @@ Imports:
     missForest,
     readr,
     stats,
+    stringr,
     tibble,
     xcms
