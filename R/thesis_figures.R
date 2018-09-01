@@ -553,14 +553,14 @@ figure_vip <- function(number = 20,
   mzpls_impvars <- cbind(mz = factor(rownames(mzpls_impvars),
                                       levels = rev(rownames(mzpls_impvars))
                                       ), mzpls_impvars)
-  mzpls_impvars <- as_tibble(mzpls_impvars[1:number, ], rownames = NULL)
+  mzpls_impvars <- tibble::as_tibble(mzpls_impvars[1:number, ], rownames = NULL)
 
   # For mzrf
   rownames(mzrf_impvars) <- gsub("mz_", "", rownames(mzrf_impvars))
   mzrf_impvars <- cbind(mz = factor(rownames(mzrf_impvars),
                                      levels = rev(rownames(mzrf_impvars))
   ), mzrf_impvars)
-  mzrf_impvars <- as_tibble(mzrf_impvars[1:number, ], rownames = NULL)
+  mzrf_impvars <- tibble::as_tibble(mzrf_impvars[1:number, ], rownames = NULL)
 
   # create plots ---------------------------------------------------------------
   mzpls_plot <- ggplot(mzpls_impvars,
@@ -570,15 +570,15 @@ figure_vip <- function(number = 20,
                size = 3) +
     theme(axis.ticks.y = element_blank(),
           axis.ticks.x = element_blank(),
-          axis.text.x = element_text(size = 10),
+          axis.text.x = element_text(size = 10,
+                                     colour = "grey80"),
           axis.text.y = element_text(size = 10),
           axis.title = element_blank(),
           panel.background = element_blank(),
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
-          panel.grid.major.y = element_line(colour = "grey75",
-                                            size = 0.2,
-                                            linetype = "dashed"),
+          panel.grid.major.y = element_line(colour = "grey90",
+                                            size = 0.4),
           legend.position = "none")
 
   mzrf_plot <- ggplot(mzrf_impvars,
@@ -588,15 +588,15 @@ figure_vip <- function(number = 20,
                size = 3) +
     theme(axis.ticks.y = element_blank(),
           axis.ticks.x = element_blank(),
-          axis.text.x = element_text(size = 10),
+          axis.text.x = element_text(size = 10,
+                                     colour = "grey80"),
           axis.text.y = element_text(size = 10),
           axis.title = element_blank(),
           panel.background = element_blank(),
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
-          panel.grid.major.y = element_line(colour = "grey75",
-                                            size = 0.2,
-                                            linetype = "dashed"),
+          panel.grid.major.y = element_line(colour = "grey90",
+                                            size = 0.4),
           legend.position = "none")
 
   # Create composite plot and axis text grobs ----------------------------------
@@ -615,7 +615,7 @@ figure_vip <- function(number = 20,
                            y = grid::unit(0.5, "npc"),
                            gp = grid::gpar(fontsize = 12)))
 
-  xgrob <- grid::textGrob("VIP Scores",
+  xgrob <- grid::textGrob("Variable Importance",
                           x = grid::unit(0.5, "npc"),
                           y = grid::unit(0.5, "npc"),
                           just = c("centre"),
