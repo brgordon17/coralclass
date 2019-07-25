@@ -31,8 +31,6 @@
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
-#' @param save.gg Logical indicating if ggplot object should be saved to
-#' \code{./inst/extdata/}
 #' @param plot.name Name of plot if \code{save.plot = TRUE}.
 #' @param model.name Name of model if \code{save.model = TRUE}.
 #' @param seed An integer for setting the RNG state.
@@ -58,7 +56,6 @@ nmrpls <- function(parallel = TRUE,
                    save.model = FALSE,
                    view.plot = TRUE,
                    save.plot = FALSE,
-                   save.gg = FALSE,
                    plot.name = "nmrpls_cv_plot",
                    model.name = "nmrpls_model",
                    seed = 1978,
@@ -116,7 +113,7 @@ nmrpls <- function(parallel = TRUE,
                                   testing$class)
 
   # Plotting -------------------------------------------------------------------
-  custom_colours <- seq_colours[4] # red
+  custom_colours <- phdhelpr::warm_colours[4] # red
 
   train_plot <- ggplot(nmrpls$results, aes(x = ncomp,
                                            y = Accuracy)) +
@@ -159,10 +156,6 @@ nmrpls <- function(parallel = TRUE,
                    useDingbats = FALSE)
     print(train_plot)
     grDevices::dev.off()
-  }
-
-  if (save.gg) {
-    saveRDS(train_plot, "./inst/extdata/nmrpls_tune_ggobject.rds")
   }
 
   if(save.model) {

@@ -31,8 +31,6 @@
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
-#' @param save.gg Logical indicating if ggplot object should be saved to
-#' \code{./inst/extdata/}
 #' @param plot.name Name of plot if \code{save.plot = TRUE}.
 #' @param model.name Name of model if \code{save.model = TRUE}.
 #' @param seed An integer for setting the RNG state.
@@ -58,7 +56,6 @@ mzpls <- function(parallel = TRUE,
                   save.model = TRUE,
                   view.plot = TRUE,
                   save.plot = FALSE,
-                  save.gg = FALSE,
                   plot.name = "mzpls_cv_plot",
                   model.name = "mzpls_model",
                   seed = 1978,
@@ -122,8 +119,7 @@ mzpls <- function(parallel = TRUE,
                                   test$class)
 
   # Plotting -------------------------------------------------------------------
-
-  custom_colours <- seq_colours[4] # red
+  custom_colours <- phdhelpr::warm_colours[4] # red
 
   train_plot <- ggplot(mzpls$results,
                        aes(x = ncomp, y = Accuracy)) +
@@ -170,10 +166,6 @@ mzpls <- function(parallel = TRUE,
 
   if(save.model) {
     saveRDS(mzpls, paste(c("./inst/extdata/", model.name, ".rds"), collapse = ""))
-  }
-
-  if (save.gg) {
-    saveRDS(train_plot, "./inst/extdata/mzpls_tune_ggobject.rds")
   }
 
   if(pred.results) {

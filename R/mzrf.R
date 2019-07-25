@@ -34,8 +34,6 @@
 #' be printed to the plot viewer.
 #' @param save.plot Logical indicating if plot should be saved to a \code{.pdf}
 #' in the \code{./figs} directory.
-#' @param save.gg Logical indicating if ggplot object should be saved to
-#' \code{./inst/extdata/}
 #' @param plot.name Name of plot if \code{save.plot = TRUE}.
 #' @param model.name Name of model if \code{save.model = TRUE}.
 #' @param seed An integer for setting the RNG state.
@@ -61,7 +59,6 @@ mzrf <- function(parallel = TRUE,
                  save.model = FALSE,
                  view.plot = TRUE,
                  save.plot = FALSE,
-                 save.gg = FALSE,
                  plot.name = "mzrf_cv_plot",
                  model.name = "mzrf_model",
                  seed = 1978,
@@ -132,7 +129,7 @@ mzrf <- function(parallel = TRUE,
                                   test_data$class)
 
   # Plotting -------------------------------------------------------------------
-  custom_colours <- seq_colours[4] # red
+  custom_colours <- phdhelpr::warm_colours[4] # red
 
   train_plot <- ggplot(mzrf$results, aes(x = mtry,
                                          y = Accuracy)) +
@@ -175,10 +172,6 @@ mzrf <- function(parallel = TRUE,
                    useDingbats = FALSE)
     print(train_plot)
     grDevices::dev.off()
-  }
-
-  if (save.gg) {
-    saveRDS(train_plot, "./inst/extdata/mzrf_tune_ggobject.rds")
   }
 
   if(save.model) {
