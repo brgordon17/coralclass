@@ -1,7 +1,5 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
+output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -10,41 +8,30 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "README-",
+  out.width = "100%"
 )
 ```
 
-# gordon01
+# Coral Metabolomics: Classification of Corals Exposed to Elevated Temperature and Carbon Dioxide
 
-CHANGE!!! zenodo DOI badge
-[![DOI](https://zenodo.org/badge/6271972.svg)](https://zenodo.org/badge/latestdoi/6271972)
+<!-- badges: start -->
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+<!-- badges: end -->
 
-### Authors
-* Benjamin R. Gordon
-* Check if I should add others? I may not need to if it's a thesis repo.
+This repositry contains the data and analysis of my research into the effects of ocean acidification and warming on the metabolome of *Acopora aspera*. It is provided as an R package for two reasons:
 
-### Contributors
-* Other "authors" may be able to go here instead of into the authors section.
+1. to ensure reproducibility while adopting a common standard project structure
+2. to explore the merits of doing so. 
 
-### Overview
-This repositry contains the data and analysis of our research into the effects
-of ocean acidification and warming on the metabolome of the coral 
-*Acopora aspera*. It has been permanantly archived at the DOI indicated by the 
-above linked badge.
+It provides funcions for all steps of the analysis including preprocessing, modelling as well as figure and table generation. 
 
-### R Package
-This repositry is organised as an R package to ensure reproducibility of our
-analysis. It provides funcions for all steps of the analysis including 
-**preprocessing**, **modelling** as well as **figure and table generation**.
-Please note that this package and its functions have been written explicitly for
-this project and may have limited use outside of the package.
-
-[![Travis-CI Build Status](https://travis-ci.org/<USERNAME>/<REPO>.svg?branch=master)](https://travis-ci.org/<USERNAME>/<REPO>)
+Please note that this package and its functions have been written explicitly for this project and may have limited use outside of the package.
 
 ### Package Structure
-* `data/`: Contains the preprocessed data as R data files.
-* `data-raw/`: Contains the raw data and a small subset of our `.mzXML` data
-* `inst/`: Contains the `extdata/` folder that holds `.csv` files of the
+* [data](data/): Contains the preprocessed data as R data files.
+* [data-raw](data-raw/) : Contains the raw data and a small subset of the raw LCMS data
+* [inst](inst/) : Contains the `extdata/` folder that holds `.csv` files of the
 preprocessed data.
 * `man/`: Contains the function and dataset documentation.
 * `R/`: Contains the custom functions used in the analysis.
@@ -55,12 +42,3 @@ enter the code below at the R prompt:
 ```{r pck_install, eval=FALSE}
 devtools::install_github("brgordon17/gordon01")
 ```
-
-### Citation
-Add citation
-
-### R Session Information
-```{r session}
-devtools::session_info()
-```
-
