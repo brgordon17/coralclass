@@ -17,7 +17,7 @@
 #'
 #' @note \code{mzdata_raw()} was not intended to be used outside of this
 #' package. To keep the size of this package small, only a small example subset
-#' of our LCMS \code{.mzXML} data is made available in
+#' of the raw LCMS \code{.mzXML} data is made available in
 #' \code{./data-raw/example_mzxml_data/}. The full data set is available from
 #' the package author.
 #'
