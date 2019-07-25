@@ -168,7 +168,7 @@ mzpls <- function(parallel = TRUE,
     grDevices::dev.off()
   }
 
-  if(save.mzpls) {
+  if(save.model) {
     saveRDS(mzpls, paste(c("./inst/extdata/", model.name, ".rds"), collapse = ""))
   }
 
