@@ -33,7 +33,6 @@
 #' @param savecsv Logical indicating if output should be saved as a \code{.csv}
 #' file to the current working directory
 #' @param saverda Logical indicating if a .rda file should be saved to /data
-#' @param csvname The name of the output .csv file to be saved if TRUE
 #'
 #' @return Returns a dataframe of class tbl_df
 #'
@@ -54,8 +53,7 @@
 create_mzdata <- function(parallel = FALSE,
                           seed = 100,
                           savecsv = FALSE,
-                          saverda = TRUE,
-                          csvname = "mzdata") {
+                          saverda = TRUE) {
 
   mzdata  <-  readr::read_csv("./data-raw/mzdata-raw.csv", na = "0")
 
@@ -163,12 +161,11 @@ create_mzdata <- function(parallel = FALSE,
 
   # write data -----------------------------------------------------------------
   if(saverda) {
-    devtools::use_data(mzdata)
+    save(mzdata, file = "./data/mzdata.rda", compress = "bzip2")
   }
 
   if(savecsv) {
-    readr::write_csv(mzdata, paste(c("./inst/extdata/", csvname, ".csv"),
-                                 collapse = ""))
+    readr::write_csv(mzdata, "./data/mzdata.csv")
   }
 
   message("The data contained ", percent_na, "% NAs")########
