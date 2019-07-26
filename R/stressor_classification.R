@@ -1,5 +1,5 @@
-#' stressor-classification: A  package style research compendium for Gordon
-#' et. al. 2018
+#' stressor_classification: A  package style research compendium for the coral
+#' classification chapter of B. R. Gordon's PhD thesis.
 #'
 #' The package provides all the functions and data to reproduce the analysis
 #' performed by Gordon et. al. This experiment examined the synergistic effects
@@ -27,7 +27,7 @@
 #' @author Benjamin R. Gordon
 #'
 #' @docType package
-#' @name stressor-classification
+#' @name stressor_classification
 #' @import caret
 #' @import ggplot2
 #' @import dplyr
