@@ -22,10 +22,6 @@
 #' separated \code{.txt} file.
 #'
 #' @param ppm Numeric mass error to use for cross referencing
-#' @param ref.type The format of the references column in the matched variables
-#' table. Can be one of either "generic" or "endnote". Defaults to
-#' \code{"generic"} as the endnote format, and its associated record number, is
-#' relevant only to the author.
 #' @param save.impvars Logical indicating if the table of the 20 most important
 #' variables for each model should be saved to \code{./inst/extdata/}
 #' @param save.matches Logical indicating if the table of cross referencing
@@ -47,21 +43,18 @@
 #' @export
 #'
 table_annotate <- function(ppm = 50,
-                           ref.type = c("generic", "endnote"),
                            save.impvars = FALSE,
                            save.matches = FALSE) {
-
-  ref.type <- match.arg(ref.type)
 
   # retrieve important variables -----------------------------------------------
   mzpls_mod <- readRDS("./inst/extdata/mzpls_model.rds")
   mzrf_mod <- readRDS("./inst/extdata/mzrf_model.rds")
 
   mzpls_impvars <- caret::varImp(mzpls_mod, scale = TRUE)
-  mzpls_impvars <- tibble::as_tibble(mzpls_impvars$importance)
+  mzpls_impvars <- tibble::as_tibble(mzpls_impvars$importance, rownames = "mz")
   mzpls_impvars <-
     mzpls_impvars %>%
-    mutate(mz = gsub("mz_", "", rownames(mzpls_impvars))) %>%
+    mutate(mz = gsub("mz_", "", mzpls_impvars$mz)) %>%
     rowwise() %>%
     transmute(
       mz = as.numeric(mz),# warnings arise from features with two decimal points
@@ -70,10 +63,10 @@ table_annotate <- function(ppm = 50,
     slice(1:20)
 
   mzrf_impvars <- caret::varImp(mzrf_mod, scale = TRUE)
-  mzrf_impvars <- tibble::as_tibble(mzrf_impvars$importance)
+  mzrf_impvars <- tibble::as_tibble(mzrf_impvars$importance, rownames = "mz")
   mzrf_impvars <-
     mzrf_impvars %>%
-    mutate(mz = gsub("mz_", "", rownames(mzrf_impvars))) %>%
+    mutate(mz = gsub("mz_", "", mzrf_impvars$mz)) %>%
     rowwise() %>%
     transmute(
       mz = as.numeric(mz),# warnings arise from features with two decimal points
@@ -118,20 +111,10 @@ table_annotate <- function(ppm = 50,
            -mz_low,
            -mz_high)
 
-  # References -----------------------------------------------------------------
-  if (ref.type == "generic") {
-    pls_rf_matches <-
+  # Tidy up references ---------------------------------------------------------
+    pls_rf_annotated <-
       pls_rf_matches %>%
-      mutate(ref = stringr::str_replace(endnote_ref, ",", ";")) %>%
-      select(-endnote_ref)
-  }
-
-  else if (ref.type == "endnote") {
-    pls_rf_matches <-
-      pls_rf_matches %>%
-      mutate(endnote_ref = stringr::str_replace(endnote_ref, ",", ";")) %>%
-      select(-ref)
-  }
+      mutate(reference = stringr::str_replace(reference, ",", ";"))
 
   # Output and saves -----------------------------------------------------------
   if (save.impvars) {
@@ -139,15 +122,12 @@ table_annotate <- function(ppm = 50,
   }
 
   if (save.matches) {
-    readr::write_csv(pls_rf_matches, "./tables/annotated_features.txt")
+    readr::write_csv(pls_rf_annotated, "./tables/annotated_features.txt")
   }
-
-  impvars_matches <- list(imp_vars = pls_rf_impvars,
-                          lit_matches = pls_rf_matches)
 
   message("duplicate mz values have .1 appended to the value and may produce
           some warnings")
 
-  impvars_matches
+  pls_rf_matches
 
 }
