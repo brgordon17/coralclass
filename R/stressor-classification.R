@@ -1,4 +1,5 @@
-#' gordon01: A  package style research compendium for Gordon et. al. 2018
+#' stressor-classification: A  package style research compendium for Gordon
+#' et. al. 2018
 #'
 #' The package provides all the functions and data to reproduce the analysis
 #' performed by Gordon et. al. This experiment examined the synergistic effects
@@ -7,30 +8,26 @@
 #'
 #' @section Functions:
 #' \itemize{
-#' \item create_litmz()
 #' \item create_mzdata()
 #' \item create_nmrdata()
 #' \item figure_pca()
 #' \item figure_tuning()
+#' \item figure_vip()
 #' \item mzdata_raw()
-#' \item mzpca()
 #' \item mzpls()
 #' \item mzrf()
-#' \item nmrpca()
 #' \item nmrpls()
 #' \item nmrrf()
-#' \item plot_base()
-#' \item qual_colours()
-#' \item sd_colours()
-#' \item seq_colours()
+#' \item table_annotate()
+#' \item table_cv_conmat()
 #' \item table_cv_performance()
-#' \item theme_brg_grid()
+#' \item table_model_test()
 #'}
 #'
 #' @author Benjamin R. Gordon
 #'
 #' @docType package
-#' @name gordon01
+#' @name stressor-classification
 #' @import caret
 #' @import ggplot2
 #' @import dplyr
@@ -40,7 +37,6 @@ NULL
 # variables
 if(getRversion() >= "2.15.1") {
   utils::globalVariables(c("Accuracy",
-                           "Endnote Reference",
                            "Reported m/z",
                            "Reported ion",
                            "Monoisotopic Mass (Da)",
@@ -57,14 +53,12 @@ if(getRversion() >= "2.15.1") {
                            "Reported compound name",
                            "ncomp",
                            "nmrdata",
-                           "ref",
                            "save.mzpls",
                            "obs",
                            "obs_day",
                            "n",
                            "Day",
                            "Proportion",
-                           "qual_colours",
                            "mz",
                            "control",
                            "eT",
@@ -76,9 +70,7 @@ if(getRversion() >= "2.15.1") {
                            "mz_low",
                            "mz_high",
                            "monoiso_mass",
-                           "litmz",
                            "dummy",
-                           "endnote_ref",
                            "vip"))
 
 }
