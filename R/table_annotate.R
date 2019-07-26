@@ -2,7 +2,7 @@
 #'
 #' \code{table_annotate()} compares the 20 most important variables
 #' identified in the PLS-DA and Random Forests modelling of the LCMS data with
-#' the monoisotopic mass of those in \code{\link{litmz}}.
+#' the monoisotopic mass of those in \link[coralmz]{coralmz}.
 #'
 #' \code{table_annotate()} Loads the LCMS PLS-DA and LCMS RF models and
 #' creates a table (\code{list$imp_vars}) of the 20 most important variables

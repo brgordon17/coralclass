@@ -25,7 +25,6 @@
 #' @seealso
 #' \code{\link[caret]{confusionMatrix}}
 #' \code{\link[tibble]{tibble}}
-#' \code{\link[gordon01]{table_cv_performance}}
 #'
 #' @author Benjamin R. Gordon
 #'

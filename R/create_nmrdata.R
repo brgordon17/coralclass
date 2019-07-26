@@ -1,7 +1,7 @@
 #' create nmrdata.
 #'
 #' \code{create_nmrdata()} preprocesses the 1H-NMR data used for modelling
-#' in gordon01.
+#' in this PhD chapter.
 #'
 #' \code{create_nmrdata()} takes the binned data from Bruker's Amix and creates
 #' new categorical variables based on the sample ID's. It then removes any

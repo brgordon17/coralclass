@@ -57,7 +57,7 @@ parallel processing. Although this function is exported,
 \code{create_mzdata()} was not intended to be used outside of this package.
 }
 \seealso{
-\code{\link[metabolomics]{MissingValues}}
+\code{\link[phdhelpr]{missing_values}}
 \code{\link[doMC]{registerDoMC}}
 \code{\link[missForest]{missForest}}
 }

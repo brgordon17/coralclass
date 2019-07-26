@@ -33,8 +33,8 @@ figure_pca <- function(scale = FALSE,
                        view.plot = TRUE,
                        save.plot = FALSE,
                        plot.name = "pca_figure",
-                       seed = 1978,
-                       ...) {
+                       seed = 1978
+                       ) {
 
   # perform PCAs ---------------------------------------------------------------
   set.seed(seed)

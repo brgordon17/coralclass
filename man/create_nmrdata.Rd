@@ -27,7 +27,7 @@ Returns a dataframe of class tbl_df
 }
 \description{
 \code{create_nmrdata()} preprocesses the 1H-NMR data used for modelling
-in gordon01.
+in this PhD chapter.
 }
 \details{
 \code{create_nmrdata()} takes the binned data from Bruker's Amix and creates

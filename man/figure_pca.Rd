@@ -5,9 +5,13 @@
 \title{PCA compound figure.}
 \usage{
 figure_pca(scale = FALSE, center = TRUE, view.plot = TRUE,
-  save.plot = FALSE, plot.name = "pca_figure", seed = 1978, ...)
+  save.plot = FALSE, plot.name = "pca_figure", seed = 1978)
 }
 \arguments{
+\item{scale}{Logical indicating if scaling should be applied in PCA}
+
+\item{center}{Logical indicatinf if the data should be centered}
+
 \item{view.plot}{Logical indicating if the plot should be printed to the plot
 viewer.}
 
@@ -15,6 +19,8 @@ viewer.}
 \code{./figs/}.}
 
 \item{plot.name}{Name of plot.}
+
+\item{seed}{Integer the sets the state of the random number generator}
 }
 \description{
 \code{figure_pca()} reproduces the LCMS and NMR PCA scores compound figure
