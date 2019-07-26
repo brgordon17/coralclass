@@ -105,7 +105,7 @@ create_nmrdata <- function(savecsv = FALSE,
 
   # write data -----------------------------------------------------------------
   if(saverda) {
-    devtools::use_data(nmrdata)
+    save(nmrdata, file = "./data/nmrdata.rda", compress = "bzip2")
   }
 
   if(savecsv) {
