@@ -71,6 +71,7 @@ if(getRversion() >= "2.15.1") {
                            "mz_high",
                            "monoiso_mass",
                            "dummy",
-                           "vip"))
+                           "vip",
+                           "reference"))
 
 }
