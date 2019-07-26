@@ -127,29 +127,31 @@ mzpls <- function(parallel = TRUE,
               size = 1) +
     geom_point(aes(x = ncomp[ncomp == 16],
                    y = Accuracy[ncomp == 16]),
-                colour = custom_colours,
-                size = 3) +
-    scale_x_continuous(limits = c(1, 50),
-                       expand = waiver(),
-                       name = "Number of Components") +
-    scale_y_continuous(limits = c(0, 1),
-                       expand = waiver()) +
-    theme_brg_grid() +
-    theme(panel.grid.major.x = element_blank(),
-          panel.grid.major.y = element_line(colour = "grey90",
-                                            size = 0.6),
-          axis.ticks.x = element_blank(),
-          axis.ticks.y = element_line(colour = "grey90",
-                                      size = 0.6),
-          axis.line.x = element_blank()) +
+               colour = custom_colours,
+               size = 3) +
     annotate("text",
              x = 16,
              y = 0.8428571 + 0.15,
              label = "LCMS PLS-DA") +
     annotate("text",
-              x = 16,
-              y = 0.8428571 + 0.08,
-              label = "Best Tune (16, 0.84)")
+             x = 16,
+             y = 0.8428571 + 0.08,
+             label = "Best Tune (16, 0.84)") +
+    scale_x_continuous(limits = c(1, 50),
+                       expand = waiver(),
+                       name = "Number of Components") +
+    scale_y_continuous(limits = c(0, 1),
+                       expand = waiver()) +
+    theme(panel.background = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "grey90",
+                                            size = 0.6),
+          axis.title = element_text(size = 14),
+          axis.text = element_text(colour = "grey65"),
+          axis.ticks.x = element_blank(),
+          axis.ticks.y = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.line.x = element_blank())
 
   if(view.plot) {
     print(train_plot)

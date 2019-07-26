@@ -131,27 +131,15 @@ mzrf <- function(parallel = TRUE,
   # Plotting -------------------------------------------------------------------
   custom_colours <- phdhelpr::warm_colours[4] # red
 
-  train_plot <- ggplot(mzrf$results, aes(x = mtry,
-                                         y = Accuracy)) +
+  train_plot <- ggplot(mzrf$results,
+                       aes(x = mtry,
+                           y = Accuracy)) +
     geom_line(colour = custom_colours,
               size = 1) +
     geom_point(aes(x = mtry[mtry == 350],
                    y = Accuracy[mtry == 350]),
                colour = custom_colours,
                size = 3) +
-    scale_x_continuous(limits = c(10, 550),
-                       expand = c(0, 0),
-                       name = "mtry") +
-    scale_y_continuous(limits = c(0, 1),
-                       expand = waiver()) +
-    theme_brg_grid() +
-    theme(panel.grid.major.x = element_blank(),
-          panel.grid.major.y = element_line(colour = "grey90",
-                                            size = 0.6),
-          axis.ticks.x = element_blank(),
-          axis.ticks.y = element_line(colour = "grey90",
-                                      size = 0.6),
-          axis.line.x = element_blank()) +
     annotate("text",
              x = 350,
              y = 0.8428571 + 0.15,
@@ -159,7 +147,22 @@ mzrf <- function(parallel = TRUE,
     annotate("text",
              x = 350,
              y = 0.8426587 + 0.08,
-             label = "Best Tune (350, 0.84)")
+             label = "Best Tune (350, 0.84)") +
+    scale_x_continuous(limits = c(10, 550),
+                       expand = c(0, 0),
+                       name = "mtry") +
+    scale_y_continuous(limits = c(0, 1),
+                       expand = waiver()) +
+    theme(panel.background = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "grey90",
+                                            size = 0.6),
+          axis.title = element_text(size = 14),
+          axis.text = element_text(colour = "grey65"),
+          axis.ticks.x = element_blank(),
+          axis.ticks.y = element_line(colour = "grey90",
+                                      size = 0.6),
+          axis.line.x = element_blank())
 
   if(view.plot) {
     print(train_plot)
