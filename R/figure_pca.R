@@ -7,11 +7,14 @@
 #' extracts the legend from the mzpca plot; adds plot labels (a and b) and saves
 #' the plot to \code{./figs/} as a \code{.pdf} file.
 #'
+#' @param scale Logical indicating if scaling should be applied in PCA
+#' @param center Logical indicatinf if the data should be centered
 #' @param view.plot Logical indicating if the plot should be printed to the plot
 #' viewer.
 #' @param save.plot Logical indicating if the plot should be saved to
 #' \code{./figs/}.
 #' @param plot.name Name of plot.
+#' @param seed Integer the sets the state of the random number generator
 #'
 #' @note Although this function is exported, \code{figure_pca()} was not
 #' intended to be used outside of this package.
