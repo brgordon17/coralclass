@@ -129,12 +129,12 @@ create_mzdata <- function(parallel = FALSE,
 
   # Impute noise and remove unreliable mass features ---------------------------
   mzdata <- tibble::as_tibble(cbind(class_day, mzdata[-1]))
-  mzdata_filt <- metabolomics::MissingValues(mzdata,
-                                             column.cutoff = 0.9,
-                                             group.cutoff = 0.6,
-                                             complete.matrix = FALSE,
-                                             seed = seed
-                                             )
+  mzdata_filt <- phdhelpr::missing_values(mzdata,
+                                          column.cutoff = 0.9,
+                                          group.cutoff = 0.6,
+                                          complete.matrix = FALSE,
+                                          seed = seed
+                                          )
   mzdata <- data.frame(sample_ids,
                      class,
                      day,
