@@ -1,6 +1,6 @@
-Package: stressor_classification
+Package: coralclass
 Type: Package
-Title: LCMS Metabolomics Analysis of Coral From Heron Island 2011
+Title: Metabolomics Classification of Stressed Coral From Heron Island 2011
 Version: 0.0.0.9000
 Authors@R: person("Benjamin", "Gordon", email = "brgordon17@gmail.com", 
     role = c("aut", "cre"))
