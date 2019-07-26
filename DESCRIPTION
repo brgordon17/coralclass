@@ -1,4 +1,4 @@
-Package: stressor-classification
+Package: stressor_classification
 Type: Package
 Title: LCMS Metabolomics Analysis of Coral From Heron Island 2011
 Version: 0.0.0.9000
