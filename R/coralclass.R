@@ -72,6 +72,8 @@ if(getRversion() >= "2.15.1") {
                            "monoiso_mass",
                            "dummy",
                            "vip",
-                           "reference"))
+                           "reference",
+                           "density",
+                           "Observation2"))
 
 }
