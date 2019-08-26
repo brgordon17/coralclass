@@ -4,7 +4,7 @@
 #' denisty data in section x.xx of Benjamin Gordon's PhD thesis.
 #'
 #' \code{figure_cell_density()} summarises the cell density data located in
-#' \code{./data-raww} The figure can be saved to \code{./figs/} if required.
+#' \code{./data-raw} The figure can be saved to \code{./figs/} if required.
 #'
 #' @param view.plot Logical indicating if the plot should be printed to the plot
 #' viewer.
@@ -35,7 +35,7 @@ figure_cell_density <- function(view.plot = TRUE,
                            rep("day 10", 24),
                            rep("day 14", 24)),
                          levels = c("day 5", "day 10", "day 14")
-  )
+                         )
 
   # plot
   cell_plot <-
