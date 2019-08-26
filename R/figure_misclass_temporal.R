@@ -154,76 +154,69 @@ figure_misclass_temporal <- function(view.plot = TRUE,
 
   # Plots ----------------------------------------------------------------------
   mzpls_plot <- ggplot(mzpls_prop,
-                       aes(x = Day, y = Proportion, fill = Day)) +
-    geom_col() +
-    facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
-    scale_fill_manual(values = phdhelpr::warm_colours[c(1:3, 7)],
+                       aes(x = Observation2, y = Proportion, fill = Day)) +
+    geom_col(position = "dodge", alpha = 0.8) +
+    scale_fill_manual(values = RColorBrewer::brewer.pal(5, "Reds")[2:5],
                       guide = "none") +
-    scale_x_discrete(name = NULL,
-                     labels = c("1", "4", "6", "14")) +
-    scale_y_continuous(name = NULL,
-                       expand = c(0, 0),
+    scale_x_discrete(labels = parse(text = levels(mzpls_prop$Observation2))) +
+    scale_y_continuous(expand = c(0, 0),
                        limits = c(0, 1)) +
-    theme(strip.background = element_blank(),
-          strip.text = element_text(size = 12),
-          axis.text = element_text(size = 10, colour = "grey65"),
-          axis.title = element_text(size = 12),
-          axis.ticks = element_blank()
+    theme(axis.text = element_text(size = 12, colour = "grey65"),
+          axis.title = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid.major.x = element_blank()
     )
 
   mzrf_plot <- ggplot(mzrf_prop,
-                      aes(x = Day, y = Proportion, fill = Day)) +
-    geom_col() +
-    facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
-    scale_fill_manual(values = phdhelpr::warm_colours[c(1:3, 7)],
+                      aes(x = Observation2, y = Proportion, fill = Day)) +
+    geom_col(position = "dodge", alpha = 0.8) +
+    scale_fill_manual(values = RColorBrewer::brewer.pal(5, "Reds")[2:5],
                       guide = "none") +
-    scale_x_discrete(name = NULL,
-                     labels = c("1", "4", "6", "14")) +
-    scale_y_continuous(name = NULL,
-                       expand = c(0, 0),
+    scale_x_discrete(labels = parse(text = levels(mzrf_prop$Observation2))) +
+    scale_y_continuous(expand = c(0, 0),
                        limits = c(0, 1)) +
-    theme(strip.background = element_blank(),
-          strip.text = element_text(size = 12),
-          axis.text = element_text(size = 10, colour = "grey65"),
-          axis.title = element_text(size = 12),
-          axis.ticks = element_blank()
+    theme(axis.text = element_text(size = 12, colour = "grey65"),
+          axis.title = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid.major.x = element_blank()
     )
 
   nmrpls_plot <- ggplot(nmrpls_prop,
-                        aes(x = Day, y = Proportion, fill = Day)) +
-    geom_col() +
-    facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
-    scale_fill_manual(values = phdhelpr::warm_colours[c(1:3, 7)],
+                        aes(x = Observation2, y = Proportion, fill = Day)) +
+    geom_col(position = "dodge", alpha = 0.8) +
+    scale_fill_manual(values = RColorBrewer::brewer.pal(5, "Reds")[2:5],
                       guide = "none") +
-    scale_x_discrete(name = NULL,
-                     labels = c("1", "4", "6", "14")) +
-    scale_y_continuous(name = NULL,
-                       expand = c(0, 0),
+    scale_x_discrete(labels = parse(text = levels(nmrpls_prop$Observation2))) +
+    scale_y_continuous(expand = c(0, 0),
                        limits = c(0, 1)) +
-    theme(strip.background = element_blank(),
-          strip.text = element_text(size = 12),
-          axis.text = element_text(size = 10, colour = "grey65"),
-          axis.title = element_text(size = 12),
-          axis.ticks = element_blank()
+    theme(axis.text = element_text(size = 12, colour = "grey65"),
+          axis.title = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid.major.x = element_blank()
     )
 
   nmrrf_plot <- ggplot(nmrrf_prop,
-                       aes(x = Day, y = Proportion, fill = Day)) +
-    geom_col() +
-    facet_wrap( ~ Observation2, nrow = 1, labeller = label_parsed) +
-    scale_fill_manual(values = phdhelpr::warm_colours[c(1:3, 7)],
-                      guide = "none") +
-    scale_x_discrete(name = NULL,
-                     labels = c("1", "4", "6", "14")) +
-    scale_y_continuous(name = NULL,
-                       expand = c(0, 0),
+                       aes(x = Observation2, y = Proportion, fill = Day)) +
+    geom_col(position = "dodge", alpha = 0.8) +
+    scale_fill_manual(values = RColorBrewer::brewer.pal(5, "Reds")[2:5],
+                      name = NULL,
+                      labels = c("day 1", "day 4", "day 6", "day 14")) +
+    scale_x_discrete(labels = parse(text = levels(nmrrf_prop$Observation2))) +
+    scale_y_continuous(expand = c(0, 0),
                        limits = c(0, 1)) +
-    theme(strip.background = element_blank(),
-          strip.text = element_text(size = 12),
-          axis.text = element_text(size = 10, colour = "grey65"),
-          axis.title = element_text(size = 12),
-          axis.ticks = element_blank()
+    theme(axis.text = element_text(size = 12, colour = "grey65"),
+          axis.title = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid.major.x = element_blank(),
+          legend.text = element_text(size = 14),
+          legend.title = element_text(size = 14),
+          legend.position = "right"
     )
+
+  # Extract Legend -------------------------------------------------------------
+  g_tab <- ggplot_gtable(ggplot_build(nmrrf_plot))
+  leg <- which(sapply(g_tab$grobs, function(x) x$name) == "guide-box")
+  legend <- g_tab$grobs[[leg]]
 
   # Set corner labels ----------------------------------------------------------
   mzpls_plot_a <-
@@ -255,7 +248,7 @@ figure_misclass_temporal <- function(view.plot = TRUE,
 
   nmrrf_plot_d <-
     gridExtra::arrangeGrob(
-      nmrrf_plot,
+      nmrrf_plot + theme(legend.position = "none"),
       top = grid::textGrob("NMR Random Forests",
                            x = grid::unit(0.5, "npc"),
                            y = grid::unit(0.5, "npc"),
@@ -263,19 +256,12 @@ figure_misclass_temporal <- function(view.plot = TRUE,
       ))
 
   # create x- and y-axis text grobs --------------------------------------------
-  xgrob <- grid::textGrob("Days of Exposure",
-                          x = grid::unit(0.5, "npc"),
-                          y = grid::unit(0.5, "npc"),
-                          just = c("centre"),
-                          gp = grid::gpar(fontsize = 12)
-  )
-
   ygrob <- grid::textGrob("Proportion of Misclassified Samples",
                           x = grid::unit(0.5, "npc"),
                           y = grid::unit(0.5, "npc"),
                           just = c("centre"),
                           rot = 90,
-                          gp = grid::gpar(fontsize = 12)
+                          gp = grid::gpar(fontsize = 14)
   )
 
   # Create, view, save plot ----------------------------------------------------
@@ -287,7 +273,7 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                             nmrrf_plot_d,
                             nrow = 2,
                             left = ygrob,
-                            bottom = xgrob)
+                            right = legend)
   }
 
   if (save.plot) {
@@ -301,7 +287,7 @@ figure_misclass_temporal <- function(view.plot = TRUE,
                             nmrrf_plot_d,
                             nrow = 2,
                             left = ygrob,
-                            bottom = xgrob)
+                            right = legend)
     grDevices::dev.off()
   }
 
