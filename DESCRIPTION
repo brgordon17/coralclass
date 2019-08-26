@@ -27,6 +27,7 @@ Imports:
     magrittr,
     phdhelpr,
     missForest,
+    RColorBrewer,
     readr,
     stats,
     stringr,
