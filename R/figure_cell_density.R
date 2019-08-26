@@ -53,11 +53,11 @@ figure_cell_density <- function(view.plot = TRUE,
 
   ggsave("./cell-density-boxplot.pdf",
          height = 5, width = 10, units = "in")
-  graphics.off()
+  grDevices::graphics.off()
 
   # Create, view, save plot ----------------------------------------------------
   if (view.plot) {
-    cell_plot
+    print(cell_plot)
   }
 
   if (save.plot) {
