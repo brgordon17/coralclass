@@ -128,7 +128,7 @@ table_annotate <- function(ppm = 50,
            -7:-133,
            -pcgroup) %>%
     mutate(mz_neutral = as.numeric(stringr::str_sub(adduct, stringr::str_length(adduct)-6, -1))) %>%
-    mutate(adduct = str_sub(adduct, 1, str_length(adduct)-8)) %>%
+    mutate(adduct = stringr::str_sub(adduct, 1, stringr::str_length(adduct)-8)) %>%
     filter(!is.na(mz_neutral))
 
   # add variables for 50ppm error based on adduct mz (mz_neutral)
