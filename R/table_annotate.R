@@ -114,7 +114,7 @@ table_annotate <- function(ppm = 50,
            -importance)
 
   # cross reference any adducts ------------------------------------------------
-  mzdata_raw <- read_csv("./data-raw/mzdata-raw.csv", na = "0")
+  mzdata_raw <- readr::read_csv("./data-raw/mzdata-raw.csv", na = "0")
   mzdata_raw[1] <- NULL
   colnames(mzdata_raw)[1] <- "mz_raw"
 
@@ -127,7 +127,7 @@ table_annotate <- function(ppm = 50,
     select(-dummy,
            -7:-133,
            -pcgroup) %>%
-    mutate(mz_neutral = as.numeric(str_sub(adduct, str_length(adduct)-6, -1))) %>%
+    mutate(mz_neutral = as.numeric(stringr::str_sub(adduct, stringr::str_length(adduct)-6, -1))) %>%
     mutate(adduct = str_sub(adduct, 1, str_length(adduct)-8)) %>%
     filter(!is.na(mz_neutral))
 
