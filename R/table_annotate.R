@@ -100,20 +100,60 @@ table_annotate <- function(ppm = 50,
   pls_rf_impvars <-
     bind_rows(mzpls_impvars, mzrf_impvars)
 
-  # Cross reference with litmz -------------------------------------------------
+  # Cross reference with coralmz -----------------------------------------------
   pls_rf_matches <-
     pls_rf_impvars %>%
+    mutate(dummy = TRUE,
+           adduct = NA) %>%
+    left_join(coralmz::coralmz %>% mutate(dummy = TRUE))  %>%
+    filter(monoiso_mass <= mz_high, monoiso_mass >= mz_low) %>%
+    select(-dummy,
+           -mz_neutral,
+           -mz_low,
+           -mz_high,
+           -importance)
+
+  # cross reference any adducts ------------------------------------------------
+  mzdata_raw <- read_csv("./data-raw/mzdata-raw.csv", na = "0")
+  mzdata_raw[1] <- NULL
+  colnames(mzdata_raw)[1] <- "mz_raw"
+
+  # identify adducts from pls_rf_impvars
+  adduct_matches <-
+    pls_rf_impvars %>%
+    mutate(dummy = TRUE) %>%
+    left_join(mzdata_raw %>% mutate(dummy = TRUE))  %>%
+    filter(near(mz, mz_raw, tol = .0001)) %>%
+    select(-dummy,
+           -7:-133,
+           -pcgroup) %>%
+    mutate(mz_neutral = as.numeric(str_sub(adduct, str_length(adduct)-6, -1))) %>%
+    mutate(adduct = str_sub(adduct, 1, str_length(adduct)-8)) %>%
+    filter(!is.na(mz_neutral))
+
+  # add variables for 50ppm error based on adduct mz (mz_neutral)
+  adduct_matches <-
+    adduct_matches %>%
+    rowwise() %>%
+    mutate(mz_low = mz_neutral - (mz_neutral * ppm/10^6),
+           mz_high = mz_neutral + (mz_neutral * ppm/10^6)) %>%
+    ungroup()
+
+  # Cross reference with coralmz
+  adduct_matches <-
+    adduct_matches %>%
     mutate(dummy = TRUE) %>%
     left_join(coralmz::coralmz %>% mutate(dummy = TRUE))  %>%
     filter(monoiso_mass <= mz_high, monoiso_mass >= mz_low) %>%
     select(-dummy,
            -mz_neutral,
            -mz_low,
-           -mz_high)
+           -mz_high,
+           -importance)
 
   # Tidy up references ---------------------------------------------------------
     pls_rf_annotated <-
-      pls_rf_matches %>%
+      bind_rows(pls_rf_matches, adduct_matches) %>%
       mutate(reference = stringr::str_replace(reference, ",", ";"))
 
   # Output and saves -----------------------------------------------------------
@@ -128,6 +168,6 @@ table_annotate <- function(ppm = 50,
   message("duplicate mz values have .1 appended to the value and may produce
           some warnings")
 
-  pls_rf_matches
+  pls_rf_annotated
 
 }
