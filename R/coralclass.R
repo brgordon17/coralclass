@@ -77,6 +77,8 @@ if(getRversion() >= "2.15.1") {
                            "Observation2",
                            "mz_raw",
                            "pcgroup",
-                           "adduct"))
+                           "adduct",
+                           "day",
+                           "FvFm"))
 
 }
