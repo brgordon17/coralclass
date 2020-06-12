@@ -10,12 +10,12 @@ BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https
 <!-- badges: end -->
 
 This repositry contains the data and analysis of research into the
-effects of ocean acidification and warming on the metabolome of *Acopora
-aspera*. It is provided as an R package to ensure reproducibility while
-adopting a common standard project structure; and to explore the merits
-of doing so. It provides funcions for all steps of the analysis
-including preprocessing, modelling as well as figure and table
-generation.
+effects of ocean acidification and warming on the metabolome of
+*Acropora aspera*. It is provided as an R package to ensure
+reproducibility while adopting a common standard project structure; and
+to explore the merits of doing so. It provides funcions for all steps of
+the analysis including preprocessing, modelling as well as figure and
+table generation.
 
 Please note that this package and its functions have been written
 explicitly for this project and may have limited use outside of the
