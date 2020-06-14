@@ -79,6 +79,7 @@ if(getRversion() >= "2.15.1") {
                            "pcgroup",
                            "adduct",
                            "day",
-                           "FvFm"))
+                           "FvFm",
+                           "pamdata"))
 
 }
