@@ -22,6 +22,8 @@ create_pamdata <- function(path = "./data-raw/pamdata.csv",
   # read and sort data
   pamdata  <-  readr::read_csv(path, na = "0")
   pamdata <- dplyr::select(pamdata, day, class, FvFm)
+  pamdata$class <- factor(pamdata$class,
+                          levels = c("control", "eCO2", "eT", "eCO2eT"))
 
   # write data
   if(saverda) {
