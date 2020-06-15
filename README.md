@@ -7,6 +7,7 @@
 
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/198944888.svg)](https://zenodo.org/badge/latestdoi/198944888)
 <!-- badges: end -->
 
 This repositry contains the data and analysis of chapter 4 of BGs
