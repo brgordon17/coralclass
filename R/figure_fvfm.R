@@ -23,9 +23,6 @@
 figure_fvfm <- function(save.plot = FALSE,
                         plot.name = "fvfm_plot") {
 
-  # load data
-  load("./data/pamdata.rda")
-
   # plot
   fvfm_plot <- ggplot(pamdata, aes(x = day,
                                    y = FvFm,
