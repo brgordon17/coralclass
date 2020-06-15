@@ -1,7 +1,7 @@
 {
     "description": "<p>contains the data and analysis of chapter 4 of BGs PH.D. thesis, which examines the effects of ocean acidification and warming on the metabolome of <em>Acropora aspera</em>. It is provided as an R package to ensure reproducibility while adopting a common standard project structure; and to explore the merits of doing so. It provides functions to reproduce all steps of the analysis including preprocessing, modelling, figure and table generation.</p>",
     "license": "MIT",
-    "title": "coralclass",
+    "title": "coralclass: Classification of Coral Phenotypes",
     "upload_type": "software",
     "keywords": [
         "coral",
