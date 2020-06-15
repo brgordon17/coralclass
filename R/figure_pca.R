@@ -47,13 +47,15 @@ figure_pca <- function(scale = FALSE,
   mz_scores <- data.frame(mzdata[, 2:6], mzpca$x)
   mz_x_lab <- paste("PC1", " (", round(mz_exp_var[1] * 100, 2), "%)", sep =  "")
   mz_y_lab <- paste("PC2", " (", round(mz_exp_var[2] * 100, 2), "%)", sep =  "")
-  custom_colors <- phdhelpr::qual_colours[c(1:3, 6, 8)]
+  custom_colors <- phdhelpr::qual_colours[c(3:1, 6, 8)]
+  levels(mzdata$class) <- c("control", "eCO2", "eT", "eCO2eT", "PBQC")
 
   # Define variables for nmr PCA plot ------------------------------------------
   nmr_exp_var <- summary(nmrpca)$importance[2 ,]
   nmr_scores <- data.frame(nmrdata[, 2:6], nmrpca$x)
   nmr_x_lab <- paste("PC1", " (", round(nmr_exp_var[1] * 100, 2), "%)", sep =  "")
   nmr_y_lab <- paste("PC2", " (", round(nmr_exp_var[2] * 100, 2), "%)", sep =  "")
+  levels(nmrdata$class) <- c("control", "eCO2", "eT", "eCO2eT", "PBQC")
 
   # create mzpca plot ----------------------------------------------------------
   mzpcaplot <-
@@ -63,24 +65,30 @@ figure_pca <- function(scale = FALSE,
                color = class,
                fill = class,
                shape = class)) +
-    geom_point(size = 2.5,
+    geom_point(size = 3,
                stroke = 0.7,
                position = position_jitter(width = 0.01 * diff(range(mz_scores$PC1)),
                                           height = 0.01 * diff(range(mz_scores$PC2))
                )) +
     labs(x = mz_x_lab, y = mz_y_lab) +
     scale_shape_manual(name = NULL,
-                       values = c(21:25)) +
+                       values = c(21:25),
+                       labels = c("control", expression(eCO[2]), "eT",
+                                  expression(eCO[2]*eT, "PBQC"))) +
     scale_color_manual(name = NULL,
                        values = grDevices::adjustcolor(custom_colors,
-                                                       alpha.f = 0.9)) +
+                                                       alpha.f = 1),
+                       labels = c("control", expression(eCO[2]), "eT",
+                                  expression(eCO[2]*eT,"PBQC"))) +
     scale_fill_manual(name = NULL,
                       values = grDevices::adjustcolor(custom_colors,
-                                                      alpha.f = 0.5)) +
+                                                      alpha.f = 0.5),
+                      labels = c("control", expression(eCO[2]), "eT",
+                                 expression(eCO[2]*eT), "PBQC")) +
     theme(panel.background = element_blank(),
           axis.ticks = element_blank(),
           panel.grid.major = element_line(colour = "grey90"),
-          axis.text = element_text(colour = "grey70"),
+          axis.text = element_text(colour = "grey65"),
           axis.title.y = element_text(size = 14),
           axis.title.x = element_text(size = 14),
           legend.text = element_text(size = 14),
@@ -95,7 +103,7 @@ figure_pca <- function(scale = FALSE,
                color = class,
                fill = class,
                shape = class)) +
-    geom_point(size = 2.5,
+    geom_point(size = 3,
                stroke = 0.7,
                position = position_jitter(width = 0.01 * diff(range(nmr_scores$PC1)),
                                           height = 0.01 * diff(range(nmr_scores$PC2))
@@ -105,14 +113,14 @@ figure_pca <- function(scale = FALSE,
                        values = c(21:25)) +
     scale_color_manual(name = NULL,
                        values = grDevices::adjustcolor(custom_colors,
-                                                       alpha.f = 0.9)) +
+                                                       alpha.f = 1)) +
     scale_fill_manual(name = NULL,
                       values = grDevices::adjustcolor(custom_colors,
                                                       alpha.f = 0.5)) +
     theme(panel.background = element_blank(),
           axis.ticks = element_blank(),
           panel.grid.major = element_line(colour = "grey90"),
-          axis.text = element_text(colour = "grey70"),
+          axis.text = element_text(colour = "grey65"),
           axis.title.y = element_text(size = 14),
           axis.title.x = element_text(size = 14),
           legend.text = element_text(size = 14),
